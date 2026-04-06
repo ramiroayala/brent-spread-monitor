@@ -7,190 +7,88 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
-:root {
-  --bg:      #070b0f;
-  --surface: #0c1219;
-  --surface2:#111820;
-  --border:  #1b2733;
-  --border2: #223040;
-  --accent:  #00c8ff;
-  --accent2: #00e5a0;
-  --warn:    #ffd700;
-  --text:    #c8d8e8;
-  --text2:   #7a9ab0;
-  --text3:   #3d5570;
-  --neg:     #ff3d5a;
-  --pos:     #00e676;
-  --curve1:  #00c8ff;
-  --curve2:  #ffd700;
-  --curve3:  #ff6b35;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 14px;
-  min-height: 100vh;
-}
-
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(0,200,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,200,255,0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none; z-index: 0;
-}
-
-.wrap { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 0 28px 60px; }
-
-/* ── HEADER ── */
-header {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  padding: 30px 0 24px; border-bottom: 1px solid var(--border);
-  margin-bottom: 28px; flex-wrap: wrap; gap: 14px;
-}
-.logo-tag   { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.22em; color: var(--accent); text-transform: uppercase; }
-.logo-title { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: #fff; margin-top: 4px; }
-.logo-sub   { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 0.05em; margin-top: 3px; }
-.header-meta { text-align: right; }
-.header-meta .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
-.header-meta .val { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--accent); margin-top: 2px; }
-
-/* ── KPI ROW ── */
-.kpi-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; margin-bottom: 28px; }
-.kpi-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-  padding: 12px 14px; position: relative; overflow: hidden;
-}
-.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--accent); opacity:0.4; }
-.kpi-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.18em; color:var(--text3); text-transform:uppercase; margin-bottom:7px; }
-.kpi-val   { font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:600; color:#fff; line-height:1; }
-.kpi-sp    { margin-top:5px; font-family:'IBM Plex Mono',monospace; font-size:10px; }
-.kpi-sp.neg { color:var(--neg); }
-.kpi-sp.pos { color:var(--pos); }
-.kpi-sp.neutral { color:var(--text3); }
-
-/* ── SECTION LABEL ── */
-.section-label {
-  font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500;
-  letter-spacing:0.2em; color:var(--text3); text-transform:uppercase; margin-bottom:12px;
-}
-
-/* ── CARD ── */
-.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:22px; }
-.card-header { padding:18px 22px 0; display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; }
-.card-title  { font-size:15px; font-weight:600; color:#fff; }
-.card-sub    { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text2); margin-top:3px; }
-.card-body   { padding:16px 22px 20px; }
-
-/* ── CONTROLS ── */
-.controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.ctrl-label { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--text3); text-transform:uppercase; white-space:nowrap; }
-
-select {
-  appearance:none; background:var(--surface2); border:1px solid var(--border2);
-  border-radius:4px; color:var(--text); font-family:'IBM Plex Mono',monospace;
-  font-size:11px; padding:5px 26px 5px 9px; cursor:pointer;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%233d5570' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 7px center;
-  transition:border-color 0.15s;
-}
-select:hover  { border-color:var(--accent); }
-select:focus  { outline:none; border-color:var(--accent); }
-select option { background:#111820; }
-
-/* Date input styled to match selects */
-input[type="date"] {
-  appearance:none; background:var(--surface2); border:1px solid var(--border2);
-  border-radius:4px; color:var(--text); font-family:'IBM Plex Mono',monospace;
-  font-size:11px; padding:5px 9px; cursor:pointer; transition:border-color 0.15s;
-  color-scheme: dark;
-}
-input[type="date"]:hover { border-color:var(--accent); }
-input[type="date"]:focus { outline:none; border-color:var(--accent); }
-
-.toggle-group { display:flex; background:var(--surface2); border:1px solid var(--border2); border-radius:4px; overflow:hidden; }
-.toggle-btn   { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.06em; padding:5px 12px; cursor:pointer; border:none; background:transparent; color:var(--text2); transition:all 0.15s; }
-.toggle-btn.active { background:var(--accent); color:#000; }
-
-/* Period quick-select pills */
-.period-pills { display:flex; gap:4px; }
-.pill {
-  font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.06em;
-  padding:4px 10px; cursor:pointer; border:1px solid var(--border2); border-radius:3px;
-  background:var(--surface2); color:var(--text2); transition:all 0.15s; white-space:nowrap;
-}
-.pill:hover  { border-color:var(--accent); color:var(--text); }
-.pill.active { background:rgba(0,200,255,0.15); border-color:var(--accent); color:var(--accent); }
-
-/* ── CHART ── */
-.chart-wrap     { position:relative; }
-.chart-wrap.h380{ height:380px; }
-.chart-wrap.h260{ height:260px; }
-
-/* ── STAT STRIP ── */
-.stat-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border-top:1px solid var(--border); }
-.stat-cell  { background:var(--surface); padding:11px 16px; text-align:center; }
-.stat-lbl   { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.15em; color:var(--text3); text-transform:uppercase; margin-bottom:4px; }
-.stat-val   { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; }
-.stat-val.neg  { color:var(--neg); }
-.stat-val.pos  { color:var(--pos); }
-.stat-val.warn { color:var(--warn); }
-
-/* ── TWO COL ── */
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
-
-/* ── MATRIX ── */
-.matrix-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; font-family:'IBM Plex Mono',monospace; font-size:12px; }
-th { padding:9px 12px; background:var(--surface2); color:var(--text3); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; font-weight:500; text-align:center; border-bottom:1px solid var(--border); white-space:nowrap; }
-th:first-child { text-align:left; min-width:120px; }
-td { padding:9px 12px; text-align:center; border-bottom:1px solid var(--border); color:var(--text); transition:background 0.1s; }
-td:first-child { text-align:left; color:var(--text2); font-size:10px; letter-spacing:0.06em; }
-tr:last-child td { border-bottom:none; }
-td.neg     { color:var(--neg); }
-td.pos     { color:var(--pos); }
-td.neutral { color:var(--text3); }
-td.diag    { color:var(--text3); background:rgba(0,0,0,0.4); }
-td.blank   { color:var(--text3); opacity:0.2; background:rgba(0,0,0,0.2); }
-td.clickable { cursor:pointer; border-radius:3px; transition:all 0.15s; }
-td.clickable:hover    { background:rgba(0,200,255,0.12) !important; outline:1px solid rgba(0,200,255,0.4); }
-td.clickable.selected { background:rgba(0,200,255,0.18) !important; outline:1px solid var(--accent); color:#fff !important; font-weight:600; }
-
-/* ── FORWARD CURVE SELECTORS ── */
-.curve-selectors { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px; }
-.curve-sel-block { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:10px 14px; display:flex; align-items:center; gap:10px; }
-.curve-dot-label { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.curve-fixed-label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--accent); white-space:nowrap; }
-
-/* ── LEGEND ── */
-.leg-item { display:flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text2); }
-.leg-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-
-/* ── FOOTER ── */
-footer { border-top:1px solid var(--border); padding-top:18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
-.footer-note { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text3); letter-spacing:0.04em; }
-.dot-live { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent2); margin-right:6px; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-
-/* ── RESPONSIVE ── */
-@media (max-width:1100px) { .kpi-row { grid-template-columns:repeat(4,1fr); } }
-@media (max-width:860px)  { .two-col { grid-template-columns:1fr; } .kpi-row { grid-template-columns:repeat(3,1fr); } .curve-selectors { grid-template-columns:1fr; } }
-@media (max-width:640px)  { .kpi-row { grid-template-columns:repeat(2,1fr); } header { flex-direction:column; align-items:flex-start; } }
+:root{--bg:#070b0f;--surface:#0c1219;--surface2:#111820;--border:#1b2733;--border2:#223040;--accent:#00c8ff;--accent2:#00e5a0;--warn:#ffd700;--text:#c8d8e8;--text2:#7a9ab0;--text3:#3d5570;--neg:#ff3d5a;--pos:#00e676;--curve1:#00c8ff;--curve2:#ffd700}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1500px;margin:0 auto;padding:0 28px 60px}
+header{display:flex;align-items:flex-end;justify-content:space-between;padding:30px 0 24px;border-bottom:1px solid var(--border);margin-bottom:28px;flex-wrap:wrap;gap:14px}
+.logo-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.22em;color:var(--accent);text-transform:uppercase}
+.logo-title{font-size:24px;font-weight:600;letter-spacing:-.02em;color:#fff;margin-top:4px}
+.logo-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:.05em;margin-top:3px}
+.header-meta{text-align:right}
+.header-meta .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
+.header-meta .val{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px}
+.kpi-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:28px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.4}
+.kpi-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:7px}
+.kpi-price{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:#fff;line-height:1}
+.kpi-var{margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500}
+.kpi-var.neg{color:var(--neg)}.kpi-var.pos{color:var(--pos)}.kpi-var.neutral{color:var(--text3)}
+.section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;margin-bottom:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:22px}
+.card-header{padding:18px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.card-title{font-size:15px;font-weight:600;color:#fff}
+.card-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);margin-top:3px}
+.card-body{padding:16px 22px 20px}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ctrl-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;white-space:nowrap}
+select{appearance:none;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 26px 5px 9px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%233d5570' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;transition:border-color .15s}
+select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:var(--accent)}select option{background:#111820}
+input[type=date]{appearance:none;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 9px;cursor:pointer;transition:border-color .15s;color-scheme:dark}
+input[type=date]:hover{border-color:var(--accent)}input[type=date]:focus{outline:none;border-color:var(--accent)}
+.toggle-group{display:flex;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;overflow:hidden}
+.toggle-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;padding:5px 12px;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .15s}
+.toggle-btn.active{background:var(--accent);color:#000}
+.period-pills{display:flex;gap:4px}
+.pill{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.06em;padding:4px 10px;cursor:pointer;border:1px solid var(--border2);border-radius:3px;background:var(--surface2);color:var(--text2);transition:all .15s;white-space:nowrap}
+.pill:hover{border-color:var(--accent);color:var(--text)}.pill.active{background:rgba(0,200,255,.15);border-color:var(--accent);color:var(--accent)}
+.chart-wrap{position:relative}.chart-wrap.h380{height:380px}.chart-wrap.h260{height:260px}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border)}
+.stat-cell{background:var(--surface);padding:11px 16px;text-align:center}
+.stat-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:4px}
+.stat-val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600}
+.stat-val.neg{color:var(--neg)}.stat-val.pos{color:var(--pos)}.stat-val.warn{color:var(--warn)}
+.dual-matrix{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.matrix-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono',monospace;font-size:12px}
+th{padding:8px 9px;background:var(--surface2);color:var(--text3);font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:7px 9px;text-align:center;border-bottom:1px solid var(--border);color:var(--text);transition:background .1s}
+td:first-child{text-align:left;color:var(--text2);font-size:10px;letter-spacing:.03em}
+tr:last-child td{border-bottom:none}
+td.neg{color:var(--neg)}td.pos{color:var(--pos)}td.neutral{color:var(--text3)}
+td.diag{color:var(--text3);background:rgba(0,0,0,.4)}td.blank{color:var(--text3);opacity:.2;background:rgba(0,0,0,.2)}
+td.clickable{cursor:pointer;transition:all .15s}
+td.clickable:hover{background:rgba(0,200,255,.12)!important;outline:1px solid rgba(0,200,255,.4)}
+td.clickable.selected{background:rgba(0,200,255,.2)!important;outline:1px solid var(--accent);color:#fff!important;font-weight:600}
+/* MX2 period picker */
+.mx2-controls{padding:12px 22px 0;display:flex;flex-direction:column;gap:4px}
+.mx2-period-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:4px;cursor:pointer;transition:background .15s;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);border:1px solid transparent;user-select:none}
+.mx2-period-item:hover{background:rgba(0,200,255,.07);color:var(--text)}
+.mx2-period-item.active{background:rgba(0,200,255,.12);border-color:rgba(0,200,255,.3);color:var(--accent)}
+.mx2-radio-dot{width:8px;height:8px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;transition:all .15s}
+.mx2-period-item.active .mx2-radio-dot{background:var(--accent);border-color:var(--accent)}
+/* Forward curve */
+.curve-selectors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.curve-sel-block{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.curve-dot-label{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.curve-fixed-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap}
+.leg-item{display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2)}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.footer-note{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.04em}
+.dot-live{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent2);margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@media(max-width:1200px){.dual-matrix{grid-template-columns:1fr}}
+@media(max-width:1000px){.kpi-row{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){.kpi-row{grid-template-columns:repeat(3,1fr)};header{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- ══════════════════════════════════════════════════════════════
-     HEADER
-══════════════════════════════════════════════════════════════ -->
 <header>
   <div>
     <div class="logo-tag">Futures Analytics</div>
@@ -206,9 +104,7 @@ footer { border-top:1px solid var(--border); padding-top:18px; display:flex; jus
 <!-- KPI ROW -->
 <div class="kpi-row" id="kpi-row"></div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     01 — SPREAD HISTÓRICO
-══════════════════════════════════════════════════════════════ -->
+<!-- 01 SPREAD -->
 <p class="section-label">01 — Spread Histórico</p>
 <div class="card">
   <div class="card-header">
@@ -217,33 +113,22 @@ footer { border-top:1px solid var(--border); padding-top:18px; display:flex; jus
       <div class="card-sub"  id="spread-formula">CO2 / CO1 − 1</div>
     </div>
     <div class="controls">
-
-      <!-- Pair selectors -->
-      <span class="ctrl-label">Base</span>
-      <select id="sel-base"></select>
-      <span class="ctrl-label">Largo</span>
-      <select id="sel-long"></select>
-
-      <!-- % / USD -->
+      <span class="ctrl-label">Base</span><select id="sel-base"></select>
+      <span class="ctrl-label">Largo</span><select id="sel-long"></select>
       <div class="toggle-group">
         <button class="toggle-btn active" id="btn-pct" onclick="setSpreadMode('pct')">%</button>
         <button class="toggle-btn"        id="btn-usd" onclick="setSpreadMode('usd')">USD</button>
       </div>
-
-      <!-- Date range: quick pills -->
       <div class="period-pills" id="period-pills">
         <span class="pill" data-period="1m"  onclick="setPeriodPill(this,'1m')">1M</span>
         <span class="pill" data-period="3m"  onclick="setPeriodPill(this,'3m')">3M</span>
         <span class="pill" data-period="6m"  onclick="setPeriodPill(this,'6m')">6M</span>
         <span class="pill active" data-period="all" onclick="setPeriodPill(this,'all')">MAX</span>
       </div>
-
-      <!-- Date range: manual from/to -->
       <span class="ctrl-label">Desde</span>
       <input type="date" id="date-from" onchange="onDateRangeChange()">
       <span class="ctrl-label">Hasta</span>
       <input type="date" id="date-to"   onchange="onDateRangeChange()">
-
     </div>
   </div>
   <div class="card-body">
@@ -252,39 +137,67 @@ footer { border-top:1px solid var(--border); padding-top:18px; display:flex; jus
   <div class="stat-strip" id="spread-stats"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     02 — MATRIZ DE SPREADS CLICKEABLE
-══════════════════════════════════════════════════════════════ -->
+<!-- 02 DUAL MATRIX -->
 <p class="section-label">02 — Matriz de Spreads — Click para ver histórico</p>
-<div class="card">
-  <div class="card-header">
-    <div>
-      <div class="card-title">Spreads al 06/04/2026</div>
-      <div class="card-sub">Click en cualquier celda para cargar el par en el gráfico histórico</div>
-    </div>
-    <div class="controls">
-      <div class="toggle-group">
-        <button class="toggle-btn active" id="mx-btn-pct" onclick="setMatrixMode('pct')">%</button>
-        <button class="toggle-btn"        id="mx-btn-usd" onclick="setMatrixMode('usd')">USD</button>
+<div class="dual-matrix">
+
+  <div class="card" style="margin-bottom:0">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Spreads al 06/04/2026</div>
+        <div class="card-sub">Hoy · Click en cualquier celda para cargar el par</div>
+      </div>
+      <div class="controls">
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="mx-btn-pct" onclick="setMatrixMode('pct')">%</button>
+          <button class="toggle-btn"        id="mx-btn-usd" onclick="setMatrixMode('usd')">USD</button>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="card-body" style="padding-top:14px">
-    <div class="matrix-wrap">
-      <table id="matrix-table"></table>
+    <div class="card-body" style="padding-top:14px">
+      <div class="matrix-wrap"><table id="matrix-today"></table></div>
     </div>
   </div>
+
+  <div class="card" style="margin-bottom:0">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Spreads históricos — Comparación</div>
+        <div class="card-sub" id="mx2-subtitle">Seleccioná un período</div>
+      </div>
+      <div class="controls">
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="mx2-btn-pct" onclick="setMatrixMode('pct')">%</button>
+          <button class="toggle-btn"        id="mx2-btn-usd" onclick="setMatrixMode('usd')">USD</button>
+        </div>
+      </div>
+    </div>
+    <div class="mx2-controls">
+      <div class="mx2-period-item" onclick="setMx2Period('1m',this)"><div class="mx2-radio-dot"></div>1 mes atrás</div>
+      <div class="mx2-period-item" onclick="setMx2Period('2m',this)"><div class="mx2-radio-dot"></div>2 meses atrás</div>
+      <div class="mx2-period-item" onclick="setMx2Period('3m',this)"><div class="mx2-radio-dot"></div>3 meses atrás</div>
+      <div class="mx2-period-item" onclick="setMx2Period('6m',this)"><div class="mx2-radio-dot"></div>6 meses atrás</div>
+      <div class="mx2-period-item" onclick="setMx2Period('1y',this)"><div class="mx2-radio-dot"></div>1 año atrás</div>
+      <div class="mx2-period-item" id="mx2-custom-item" onclick="setMx2Period('custom',this)">
+        <div class="mx2-radio-dot"></div>Personalizado
+        <input type="date" id="mx2-custom-date" style="display:none;margin-left:10px"
+          onchange="onMx2CustomDate()" onclick="event.stopPropagation()">
+      </div>
+    </div>
+    <div class="card-body" style="padding-top:10px">
+      <div class="matrix-wrap"><table id="matrix-compare"></table></div>
+    </div>
+  </div>
+
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     03 — CURVAS FORWARD
-══════════════════════════════════════════════════════════════ -->
+<!-- 03 CURVES -->
 <p class="section-label">03 — Curvas Forward — Comparación de estructura</p>
 <div class="card">
   <div class="card-header" style="padding-bottom:0">
     <div>
       <div class="card-title">Forward Curve — CO1 a CO7</div>
-      <div class="card-sub">Curva actual (azul) + dos curvas históricas configurables</div>
+      <div class="card-sub">Curva actual (azul) vinculada con la curva de la matriz de comparación (amarillo)</div>
     </div>
   </div>
   <div class="card-body">
@@ -297,24 +210,7 @@ footer { border-top:1px solid var(--border); padding-top:18px; display:flex; jus
       <div class="curve-sel-block">
         <div class="curve-dot-label" style="background:var(--curve2)"></div>
         <span class="ctrl-label">Curva 2</span>
-        <select id="curve2-sel" onchange="buildForwardChart()">
-          <option value="1m">1 mes atrás</option>
-          <option value="2m">2 meses atrás</option>
-          <option value="3m" selected>3 meses atrás</option>
-          <option value="6m">6 meses atrás</option>
-          <option value="1y">1 año atrás</option>
-        </select>
-      </div>
-      <div class="curve-sel-block">
-        <div class="curve-dot-label" style="background:var(--curve3)"></div>
-        <span class="ctrl-label">Curva 3</span>
-        <select id="curve3-sel" onchange="buildForwardChart()">
-          <option value="1m">1 mes atrás</option>
-          <option value="2m">2 meses atrás</option>
-          <option value="3m">3 meses atrás</option>
-          <option value="6m" selected>6 meses atrás</option>
-          <option value="1y">1 año atrás</option>
-        </select>
+        <span class="curve-fixed-label" id="curve2-label" style="color:var(--warn)">Seleccioná un período en la matriz →</span>
       </div>
     </div>
     <div class="chart-wrap h260"><canvas id="curveChart"></canvas></div>
@@ -322,494 +218,160 @@ footer { border-top:1px solid var(--border); padding-top:18px; display:flex; jus
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     04 — PRECIOS & ESTRUCTURA
-══════════════════════════════════════════════════════════════ -->
-<div class="two-col">
-  <div class="card" style="margin-bottom:0">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Precios — 06/04/2026</div>
-        <div class="card-sub">Último precio de cada contrato y spread vs CO1</div>
-      </div>
-    </div>
-    <div class="card-body" style="padding-top:12px">
-      <table>
-        <thead><tr><th>Contrato</th><th>Precio</th><th>vs CO1 (%)</th><th>vs CO1 (USD)</th></tr></thead>
-        <tbody id="px-body"></tbody>
-      </table>
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:0">
-    <div class="card-header">
-      <div>
-        <div class="card-title">Estructura del Mercado</div>
-        <div class="card-sub">Backwardation vs Contango por par consecutivo</div>
-      </div>
-    </div>
-    <div class="card-body" style="padding-top:12px">
-      <table>
-        <thead><tr><th>Par</th><th>Spread (%)</th><th>Spread (USD)</th><th>Estructura</th></tr></thead>
-        <tbody id="structure-body"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<br>
 <footer>
   <div class="footer-note"><span class="dot-live"></span>ICE Brent Crude — Histórico diario 2025–2026</div>
-  <div class="footer-note">Spread = Contrato largo / Contrato corto − 1 &nbsp;|&nbsp; Largo − Corto (USD)</div>
+  <div class="footer-note">Spread = Largo / Base − 1 &nbsp;|&nbsp; Largo − Base (USD)</div>
 </footer>
+</div>
 
-</div><!-- /wrap -->
-
-<!-- ══════════════════════════════════════════════════════════════
-     JAVASCRIPT
-══════════════════════════════════════════════════════════════ -->
 <script>
-/* ─────────────────────────────────────────────────────────────
-   DATA
-───────────────────────────────────────────────────────────── */
-const RAW = [{"Date":"2025-01-02","CO1":75.93,"CO2":75.44,"CO3":75.01,"CO4":74.64,"CO5":74.27,"CO6":73.9,"CO7":73.55},{"Date":"2025-01-03","CO1":76.51,"CO2":75.93,"CO3":75.47,"CO4":75.07,"CO5":74.69,"CO6":74.32,"CO7":73.96},{"Date":"2025-01-06","CO1":76.3,"CO2":75.71,"CO3":75.24,"CO4":74.86,"CO5":74.51,"CO6":74.16,"CO7":73.82},{"Date":"2025-01-07","CO1":77.05,"CO2":76.4,"CO3":75.87,"CO4":75.45,"CO5":75.06,"CO6":74.67,"CO7":74.3},{"Date":"2025-01-08","CO1":76.16,"CO2":75.58,"CO3":75.11,"CO4":74.72,"CO5":74.36,"CO6":74.0,"CO7":73.65},{"Date":"2025-01-09","CO1":76.92,"CO2":76.25,"CO3":75.71,"CO4":75.26,"CO5":74.85,"CO6":74.46,"CO7":74.07},{"Date":"2025-01-10","CO1":79.76,"CO2":78.85,"CO3":78.06,"CO4":77.37,"CO5":76.75,"CO6":76.17,"CO7":75.64},{"Date":"2025-01-13","CO1":81.01,"CO2":79.65,"CO3":78.52,"CO4":77.59,"CO5":76.8,"CO6":76.11,"CO7":75.48},{"Date":"2025-01-14","CO1":79.92,"CO2":78.88,"CO3":77.93,"CO4":77.13,"CO5":76.46,"CO6":75.88,"CO7":75.34},{"Date":"2025-01-15","CO1":82.03,"CO2":80.66,"CO3":79.48,"CO4":78.5,"CO5":77.69,"CO6":76.98,"CO7":76.34},{"Date":"2025-01-16","CO1":81.29,"CO2":79.91,"CO3":78.72,"CO4":77.74,"CO5":76.94,"CO6":76.24,"CO7":75.61},{"Date":"2025-01-17","CO1":80.79,"CO2":79.57,"CO3":78.43,"CO4":77.45,"CO5":76.66,"CO6":75.98,"CO7":75.35},{"Date":"2025-01-20","CO1":80.15,"CO2":79.1,"CO3":78.13,"CO4":77.26,"CO5":76.54,"CO6":75.91,"CO7":75.33},{"Date":"2025-01-21","CO1":79.29,"CO2":78.4,"CO3":77.58,"CO4":76.81,"CO5":76.16,"CO6":75.58,"CO7":75.04},{"Date":"2025-01-22","CO1":79.0,"CO2":78.15,"CO3":77.37,"CO4":76.67,"CO5":76.07,"CO6":75.53,"CO7":75.03},{"Date":"2025-01-23","CO1":78.29,"CO2":77.56,"CO3":76.91,"CO4":76.29,"CO5":75.75,"CO6":75.26,"CO7":74.79},{"Date":"2025-01-24","CO1":78.5,"CO2":77.55,"CO3":76.79,"CO4":76.13,"CO5":75.56,"CO6":75.05,"CO7":74.57},{"Date":"2025-01-27","CO1":77.08,"CO2":76.18,"CO3":75.42,"CO4":74.76,"CO5":74.21,"CO6":73.73,"CO7":73.28},{"Date":"2025-01-28","CO1":77.49,"CO2":76.49,"CO3":75.6,"CO4":74.83,"CO5":74.19,"CO6":73.65,"CO7":73.16},{"Date":"2025-01-29","CO1":76.58,"CO2":75.61,"CO3":74.8,"CO4":74.1,"CO5":73.54,"CO6":73.05,"CO7":72.61},{"Date":"2025-01-30","CO1":76.87,"CO2":75.89,"CO3":75.12,"CO4":74.44,"CO5":73.87,"CO6":73.37,"CO7":72.91},{"Date":"2025-01-31","CO1":76.76,"CO2":75.67,"CO3":74.92,"CO4":74.24,"CO5":73.67,"CO6":73.17,"CO7":72.71},{"Date":"2025-02-03","CO1":75.96,"CO2":75.14,"CO3":74.41,"CO4":73.79,"CO5":73.26,"CO6":72.77,"CO7":72.31},{"Date":"2025-02-04","CO1":76.2,"CO2":75.56,"CO3":74.92,"CO4":74.33,"CO5":73.8,"CO6":73.32,"CO7":72.87},{"Date":"2025-02-05","CO1":74.61,"CO2":74.09,"CO3":73.54,"CO4":73.02,"CO5":72.54,"CO6":72.1,"CO7":71.69},{"Date":"2025-02-06","CO1":74.29,"CO2":73.84,"CO3":73.39,"CO4":72.95,"CO5":72.52,"CO6":72.11,"CO7":71.74},{"Date":"2025-02-07","CO1":74.66,"CO2":74.26,"CO3":73.83,"CO4":73.41,"CO5":72.99,"CO6":72.57,"CO7":72.19},{"Date":"2025-02-10","CO1":75.87,"CO2":75.43,"CO3":74.96,"CO4":74.49,"CO5":74.02,"CO6":73.56,"CO7":73.12},{"Date":"2025-02-11","CO1":77.0,"CO2":76.62,"CO3":76.15,"CO4":75.67,"CO5":75.18,"CO6":74.69,"CO7":74.24},{"Date":"2025-02-12","CO1":75.18,"CO2":74.87,"CO3":74.49,"CO4":74.08,"CO5":73.65,"CO6":73.21,"CO7":72.8},{"Date":"2025-02-13","CO1":75.02,"CO2":74.66,"CO3":74.25,"CO4":73.83,"CO5":73.41,"CO6":72.98,"CO7":72.58},{"Date":"2025-02-14","CO1":74.74,"CO2":74.46,"CO3":74.09,"CO4":73.7,"CO5":73.31,"CO6":72.91,"CO7":72.53},{"Date":"2025-02-17","CO1":75.22,"CO2":74.93,"CO3":74.55,"CO4":74.15,"CO5":73.74,"CO6":73.32,"CO7":72.92},{"Date":"2025-02-18","CO1":75.84,"CO2":75.43,"CO3":74.99,"CO4":74.56,"CO5":74.11,"CO6":73.66,"CO7":73.23},{"Date":"2025-02-19","CO1":76.04,"CO2":75.67,"CO3":75.24,"CO4":74.8,"CO5":74.35,"CO6":73.9,"CO7":73.48},{"Date":"2025-02-20","CO1":76.48,"CO2":76.05,"CO3":75.61,"CO4":75.19,"CO5":74.75,"CO6":74.3,"CO7":73.87},{"Date":"2025-02-21","CO1":74.43,"CO2":74.05,"CO3":73.68,"CO4":73.3,"CO5":72.91,"CO6":72.51,"CO7":72.13},{"Date":"2025-02-24","CO1":74.78,"CO2":74.31,"CO3":73.89,"CO4":73.49,"CO5":73.07,"CO6":72.66,"CO7":72.26},{"Date":"2025-02-25","CO1":73.02,"CO2":72.5,"CO3":72.09,"CO4":71.71,"CO5":71.32,"CO6":70.94,"CO7":70.57},{"Date":"2025-02-26","CO1":72.53,"CO2":72.07,"CO3":71.61,"CO4":71.19,"CO5":70.78,"CO6":70.37,"CO7":69.99},{"Date":"2025-02-27","CO1":74.04,"CO2":73.57,"CO3":73.06,"CO4":72.57,"CO5":72.09,"CO6":71.62,"CO7":71.19},{"Date":"2025-02-28","CO1":73.18,"CO2":72.81,"CO3":72.28,"CO4":71.79,"CO5":71.3,"CO6":70.85,"CO7":70.43},{"Date":"2025-03-03","CO1":71.62,"CO2":71.16,"CO3":70.76,"CO4":70.36,"CO5":69.98,"CO6":69.63,"CO7":69.31},{"Date":"2025-03-04","CO1":71.04,"CO2":70.56,"CO3":70.16,"CO4":69.78,"CO5":69.43,"CO6":69.12,"CO7":68.84},{"Date":"2025-03-05","CO1":69.3,"CO2":68.9,"CO3":68.56,"CO4":68.22,"CO5":67.9,"CO6":67.62,"CO7":67.38},{"Date":"2025-03-06","CO1":69.46,"CO2":68.98,"CO3":68.58,"CO4":68.2,"CO5":67.85,"CO6":67.55,"CO7":67.29},{"Date":"2025-03-07","CO1":70.36,"CO2":69.88,"CO3":69.45,"CO4":69.05,"CO5":68.69,"CO6":68.37,"CO7":68.1},{"Date":"2025-03-10","CO1":69.28,"CO2":68.79,"CO3":68.33,"CO4":67.91,"CO5":67.54,"CO6":67.21,"CO7":66.94},{"Date":"2025-03-11","CO1":69.56,"CO2":69.05,"CO3":68.57,"CO4":68.13,"CO5":67.74,"CO6":67.41,"CO7":67.13},{"Date":"2025-03-12","CO1":70.95,"CO2":70.45,"CO3":69.96,"CO4":69.52,"CO5":69.11,"CO6":68.75,"CO7":68.45},{"Date":"2025-03-13","CO1":69.88,"CO2":69.4,"CO3":68.94,"CO4":68.52,"CO5":68.14,"CO6":67.81,"CO7":67.54},{"Date":"2025-03-14","CO1":70.58,"CO2":70.06,"CO3":69.55,"CO4":69.1,"CO5":68.69,"CO6":68.34,"CO7":68.05},{"Date":"2025-03-17","CO1":71.07,"CO2":70.6,"CO3":70.12,"CO4":69.67,"CO5":69.25,"CO6":68.89,"CO7":68.58},{"Date":"2025-03-18","CO1":70.56,"CO2":70.12,"CO3":69.7,"CO4":69.27,"CO5":68.87,"CO6":68.52,"CO7":68.24},{"Date":"2025-03-19","CO1":70.78,"CO2":70.32,"CO3":69.87,"CO4":69.43,"CO5":69.02,"CO6":68.66,"CO7":68.37},{"Date":"2025-03-20","CO1":72.0,"CO2":71.47,"CO3":70.96,"CO4":70.47,"CO5":70.02,"CO6":69.63,"CO7":69.3},{"Date":"2025-03-21","CO1":72.16,"CO2":71.61,"CO3":71.08,"CO4":70.57,"CO5":70.1,"CO6":69.69,"CO7":69.34},{"Date":"2025-03-24","CO1":73.0,"CO2":72.37,"CO3":71.8,"CO4":71.27,"CO5":70.76,"CO6":70.31,"CO7":69.93},{"Date":"2025-03-25","CO1":73.02,"CO2":72.39,"CO3":71.82,"CO4":71.29,"CO5":70.77,"CO6":70.31,"CO7":69.93},{"Date":"2025-03-26","CO1":73.79,"CO2":73.06,"CO3":72.44,"CO4":71.86,"CO5":71.33,"CO6":70.85,"CO7":70.45},{"Date":"2025-03-27","CO1":74.03,"CO2":73.34,"CO3":72.68,"CO4":72.09,"CO5":71.56,"CO6":71.1,"CO7":70.71},{"Date":"2025-03-28","CO1":73.63,"CO2":72.76,"CO3":72.02,"CO4":71.38,"CO5":70.82,"CO6":70.35,"CO7":69.95},{"Date":"2025-03-31","CO1":74.74,"CO2":74.77,"CO3":73.97,"CO4":73.25,"CO5":72.6,"CO6":72.04,"CO7":71.55},{"Date":"2025-04-01","CO1":74.49,"CO2":73.75,"CO3":73.08,"CO4":72.49,"CO5":71.98,"CO6":71.54,"CO7":71.17},{"Date":"2025-04-02","CO1":74.95,"CO2":74.14,"CO3":73.41,"CO4":72.79,"CO5":72.26,"CO6":71.81,"CO7":71.42},{"Date":"2025-04-03","CO1":70.14,"CO2":69.42,"CO3":68.8,"CO4":68.3,"CO5":67.91,"CO6":67.6,"CO7":67.34},{"Date":"2025-04-04","CO1":65.58,"CO2":64.95,"CO3":64.47,"CO4":64.11,"CO5":63.86,"CO6":63.69,"CO7":63.57},{"Date":"2025-04-07","CO1":64.21,"CO2":63.82,"CO3":63.53,"CO4":63.31,"CO5":63.19,"CO6":63.12,"CO7":63.1},{"Date":"2025-04-08","CO1":62.82,"CO2":62.34,"CO3":61.96,"CO4":61.69,"CO5":61.54,"CO6":61.47,"CO7":61.44},{"Date":"2025-04-09","CO1":65.48,"CO2":64.88,"CO3":64.39,"CO4":64.0,"CO5":63.73,"CO6":63.52,"CO7":63.36},{"Date":"2025-04-10","CO1":63.33,"CO2":62.78,"CO3":62.36,"CO4":62.08,"CO5":61.93,"CO6":61.85,"CO7":61.8},{"Date":"2025-04-11","CO1":64.76,"CO2":64.01,"CO3":63.42,"CO4":63.02,"CO5":62.77,"CO6":62.61,"CO7":62.5},{"Date":"2025-04-14","CO1":64.88,"CO2":64.22,"CO3":63.7,"CO4":63.34,"CO5":63.12,"CO6":63.0,"CO7":62.92},{"Date":"2025-04-15","CO1":64.67,"CO2":63.88,"CO3":63.31,"CO4":62.92,"CO5":62.68,"CO6":62.55,"CO7":62.46},{"Date":"2025-04-16","CO1":65.85,"CO2":64.96,"CO3":64.32,"CO4":63.85,"CO5":63.54,"CO6":63.35,"CO7":63.22},{"Date":"2025-04-17","CO1":67.96,"CO2":67.0,"CO3":66.33,"CO4":65.85,"CO5":65.51,"CO6":65.28,"CO7":65.11},{"Date":"2025-04-21","CO1":66.26,"CO2":65.3,"CO3":64.63,"CO4":64.17,"CO5":63.86,"CO6":63.65,"CO7":63.5},{"Date":"2025-04-22","CO1":67.44,"CO2":66.48,"CO3":65.79,"CO4":65.28,"CO5":64.95,"CO6":64.72,"CO7":64.56},{"Date":"2025-04-23","CO1":66.12,"CO2":65.18,"CO3":64.57,"CO4":64.13,"CO5":63.84,"CO6":63.67,"CO7":63.56},{"Date":"2025-04-24","CO1":66.55,"CO2":65.65,"CO3":65.1,"CO4":64.71,"CO5":64.45,"CO6":64.29,"CO7":64.17},{"Date":"2025-04-25","CO1":66.87,"CO2":65.8,"CO3":65.24,"CO4":64.86,"CO5":64.63,"CO6":64.49,"CO7":64.4},{"Date":"2025-04-28","CO1":65.86,"CO2":64.79,"CO3":64.31,"CO4":64.01,"CO5":63.84,"CO6":63.76,"CO7":63.7},{"Date":"2025-04-29","CO1":64.25,"CO2":63.28,"CO3":62.91,"CO4":62.69,"CO5":62.59,"CO6":62.56,"CO7":62.57},{"Date":"2025-04-30","CO1":63.12,"CO2":61.06,"CO3":60.67,"CO4":60.43,"CO5":60.32,"CO6":60.31,"CO7":60.32},{"Date":"2025-05-01","CO1":62.13,"CO2":61.72,"CO3":61.43,"CO4":61.27,"CO5":61.22,"CO6":61.22,"CO7":61.26},{"Date":"2025-05-02","CO1":61.29,"CO2":60.93,"CO3":60.7,"CO4":60.6,"CO5":60.62,"CO6":60.68,"CO7":60.78},{"Date":"2025-05-05","CO1":60.23,"CO2":59.89,"CO3":59.7,"CO4":59.65,"CO5":59.73,"CO6":59.86,"CO7":60.01},{"Date":"2025-05-06","CO1":62.15,"CO2":61.75,"CO3":61.48,"CO4":61.37,"CO5":61.4,"CO6":61.48,"CO7":61.6},{"Date":"2025-05-07","CO1":61.12,"CO2":60.79,"CO3":60.52,"CO4":60.4,"CO5":60.42,"CO6":60.5,"CO7":60.61},{"Date":"2025-05-08","CO1":62.84,"CO2":62.45,"CO3":62.12,"CO4":61.95,"CO5":61.9,"CO6":61.9,"CO7":61.96},{"Date":"2025-05-09","CO1":63.91,"CO2":63.43,"CO3":63.02,"CO4":62.78,"CO5":62.68,"CO6":62.63,"CO7":62.64},{"Date":"2025-05-12","CO1":64.96,"CO2":64.55,"CO3":64.18,"CO4":63.95,"CO5":63.85,"CO6":63.8,"CO7":63.81},{"Date":"2025-05-13","CO1":66.63,"CO2":66.13,"CO3":65.68,"CO4":65.36,"CO5":65.18,"CO6":65.08,"CO7":65.04},{"Date":"2025-05-14","CO1":66.09,"CO2":65.58,"CO3":65.14,"CO4":64.84,"CO5":64.68,"CO6":64.6,"CO7":64.59},{"Date":"2025-05-15","CO1":64.53,"CO2":64.06,"CO3":63.67,"CO4":63.43,"CO5":63.33,"CO6":63.32,"CO7":63.37},{"Date":"2025-05-16","CO1":65.41,"CO2":64.78,"CO3":64.29,"CO4":63.94,"CO5":63.77,"CO6":63.7,"CO7":63.71},{"Date":"2025-05-19","CO1":65.54,"CO2":64.8,"CO3":64.24,"CO4":63.84,"CO5":63.63,"CO6":63.54,"CO7":63.54},{"Date":"2025-05-20","CO1":65.38,"CO2":64.76,"CO3":64.26,"CO4":63.91,"CO5":63.75,"CO6":63.71,"CO7":63.74},{"Date":"2025-05-21","CO1":64.91,"CO2":64.38,"CO3":63.89,"CO4":63.55,"CO5":63.41,"CO6":63.4,"CO7":63.45},{"Date":"2025-05-22","CO1":64.44,"CO2":63.92,"CO3":63.43,"CO4":63.08,"CO5":62.94,"CO6":62.94,"CO7":63.01},{"Date":"2025-05-23","CO1":64.78,"CO2":64.21,"CO3":63.67,"CO4":63.29,"CO5":63.14,"CO6":63.15,"CO7":63.24},{"Date":"2025-05-26","CO1":64.74,"CO2":64.12,"CO3":63.55,"CO4":63.15,"CO5":63.0,"CO6":63.03,"CO7":63.13},{"Date":"2025-05-27","CO1":64.09,"CO2":63.57,"CO3":63.03,"CO4":62.66,"CO5":62.54,"CO6":62.58,"CO7":62.69},{"Date":"2025-05-28","CO1":64.9,"CO2":64.32,"CO3":63.73,"CO4":63.32,"CO5":63.15,"CO6":63.15,"CO7":63.23},{"Date":"2025-05-29","CO1":64.15,"CO2":63.35,"CO3":62.72,"CO4":62.29,"CO5":62.11,"CO6":62.1,"CO7":62.18},{"Date":"2025-05-30","CO1":63.9,"CO2":62.78,"CO3":62.05,"CO4":61.57,"CO5":61.4,"CO6":61.41,"CO7":61.51},{"Date":"2025-06-02","CO1":64.63,"CO2":63.87,"CO3":63.32,"CO4":63.03,"CO5":62.94,"CO6":62.96,"CO7":63.03},{"Date":"2025-06-03","CO1":65.63,"CO2":64.94,"CO3":64.42,"CO4":64.14,"CO5":64.04,"CO6":64.05,"CO7":64.1},{"Date":"2025-06-04","CO1":64.86,"CO2":64.22,"CO3":63.73,"CO4":63.46,"CO5":63.37,"CO6":63.39,"CO7":63.45},{"Date":"2025-06-05","CO1":65.34,"CO2":64.75,"CO3":64.26,"CO4":63.98,"CO5":63.86,"CO6":63.87,"CO7":63.91},{"Date":"2025-06-06","CO1":66.47,"CO2":65.73,"CO3":65.15,"CO4":64.79,"CO5":64.62,"CO6":64.58,"CO7":64.61},{"Date":"2025-06-09","CO1":67.04,"CO2":66.27,"CO3":65.65,"CO4":65.24,"CO5":65.02,"CO6":64.97,"CO7":64.98},{"Date":"2025-06-10","CO1":66.87,"CO2":66.13,"CO3":65.5,"CO4":65.08,"CO5":64.86,"CO6":64.8,"CO7":64.81},{"Date":"2025-06-11","CO1":69.77,"CO2":68.92,"CO3":68.13,"CO4":67.55,"CO5":67.17,"CO6":66.98,"CO7":66.87},{"Date":"2025-06-12","CO1":69.36,"CO2":68.44,"CO3":67.67,"CO4":67.13,"CO5":66.8,"CO6":66.63,"CO7":66.55},{"Date":"2025-06-13","CO1":74.23,"CO2":72.8,"CO3":71.69,"CO4":70.85,"CO5":70.22,"CO6":69.77,"CO7":69.41},{"Date":"2025-06-16","CO1":73.23,"CO2":71.99,"CO3":71.04,"CO4":70.39,"CO5":69.93,"CO6":69.63,"CO7":69.4},{"Date":"2025-06-17","CO1":76.45,"CO2":74.9,"CO3":73.68,"CO4":72.82,"CO5":72.19,"CO6":71.74,"CO7":71.38},{"Date":"2025-06-18","CO1":76.7,"CO2":75.14,"CO3":73.9,"CO4":73.01,"CO5":72.34,"CO6":71.86,"CO7":71.46},{"Date":"2025-06-19","CO1":78.85,"CO2":77.08,"CO3":75.58,"CO4":74.48,"CO5":73.67,"CO6":73.1,"CO7":72.63},{"Date":"2025-06-20","CO1":77.01,"CO2":75.48,"CO3":74.03,"CO4":72.98,"CO5":72.27,"CO6":71.8,"CO7":71.44},{"Date":"2025-06-23","CO1":71.48,"CO2":70.52,"CO3":69.6,"CO4":69.03,"CO5":68.69,"CO6":68.5,"CO7":68.37},{"Date":"2025-06-24","CO1":67.14,"CO2":66.17,"CO3":65.36,"CO4":64.93,"CO5":64.75,"CO6":64.74,"CO7":64.77},{"Date":"2025-06-25","CO1":67.68,"CO2":66.43,"CO3":65.48,"CO4":64.9,"CO5":64.58,"CO6":64.47,"CO7":64.44},{"Date":"2025-06-26","CO1":67.73,"CO2":66.69,"CO3":65.81,"CO4":65.25,"CO5":64.95,"CO6":64.86,"CO7":64.85},{"Date":"2025-06-27","CO1":67.77,"CO2":66.8,"CO3":65.92,"CO4":65.32,"CO5":64.98,"CO6":64.85,"CO7":64.8},{"Date":"2025-06-30","CO1":67.61,"CO2":66.74,"CO3":65.86,"CO4":65.25,"CO5":64.91,"CO6":64.77,"CO7":64.72},{"Date":"2025-07-01","CO1":67.11,"CO2":66.23,"CO3":65.61,"CO4":65.24,"CO5":65.07,"CO6":64.98,"CO7":64.94},{"Date":"2025-07-02","CO1":69.11,"CO2":67.94,"CO3":67.09,"CO4":66.55,"CO5":66.26,"CO6":66.08,"CO7":65.96},{"Date":"2025-07-03","CO1":68.8,"CO2":67.68,"CO3":66.88,"CO4":66.35,"CO5":66.08,"CO6":65.92,"CO7":65.82},{"Date":"2025-07-04","CO1":68.3,"CO2":67.22,"CO3":66.46,"CO4":65.99,"CO5":65.75,"CO6":65.62,"CO7":65.54},{"Date":"2025-07-07","CO1":69.58,"CO2":68.43,"CO3":67.58,"CO4":67.0,"CO5":66.67,"CO6":66.47,"CO7":66.34},{"Date":"2025-07-08","CO1":70.15,"CO2":68.98,"CO3":68.13,"CO4":67.56,"CO5":67.23,"CO6":67.04,"CO7":66.91},{"Date":"2025-07-09","CO1":70.19,"CO2":68.97,"CO3":68.05,"CO4":67.41,"CO5":67.05,"CO6":66.84,"CO7":66.71},{"Date":"2025-07-10","CO1":68.64,"CO2":67.56,"CO3":66.77,"CO4":66.26,"CO5":66.0,"CO6":65.87,"CO7":65.8},{"Date":"2025-07-11","CO1":70.36,"CO2":69.16,"CO3":68.29,"CO4":67.72,"CO5":67.4,"CO6":67.21,"CO7":67.09},{"Date":"2025-07-14","CO1":69.21,"CO2":68.23,"CO3":67.54,"CO4":67.1,"CO5":66.85,"CO6":66.72,"CO7":66.64},{"Date":"2025-07-15","CO1":68.71,"CO2":67.78,"CO3":67.12,"CO4":66.7,"CO5":66.46,"CO6":66.33,"CO7":66.25},{"Date":"2025-07-16","CO1":68.52,"CO2":67.55,"CO3":66.9,"CO4":66.49,"CO5":66.25,"CO6":66.11,"CO7":66.03},{"Date":"2025-07-17","CO1":69.52,"CO2":68.52,"CO3":67.84,"CO4":67.36,"CO5":67.07,"CO6":66.88,"CO7":66.76},{"Date":"2025-07-18","CO1":69.28,"CO2":68.4,"CO3":67.77,"CO4":67.33,"CO5":67.05,"CO6":66.87,"CO7":66.75},{"Date":"2025-07-21","CO1":69.21,"CO2":68.38,"CO3":67.82,"CO4":67.41,"CO5":67.16,"CO6":66.99,"CO7":66.88},{"Date":"2025-07-22","CO1":68.59,"CO2":67.77,"CO3":67.25,"CO4":66.88,"CO5":66.66,"CO6":66.52,"CO7":66.43},{"Date":"2025-07-23","CO1":68.51,"CO2":67.83,"CO3":67.35,"CO4":67.01,"CO5":66.81,"CO6":66.68,"CO7":66.59},{"Date":"2025-07-24","CO1":69.18,"CO2":68.36,"CO3":67.77,"CO4":67.37,"CO5":67.13,"CO6":66.98,"CO7":66.89},{"Date":"2025-07-25","CO1":68.44,"CO2":67.66,"CO3":67.05,"CO4":66.65,"CO5":66.43,"CO6":66.3,"CO7":66.23},{"Date":"2025-07-28","CO1":70.04,"CO2":69.32,"CO3":68.69,"CO4":68.22,"CO5":67.94,"CO6":67.75,"CO7":67.62},{"Date":"2025-07-29","CO1":72.51,"CO2":71.68,"CO3":70.95,"CO4":70.38,"CO5":69.98,"CO6":69.69,"CO7":69.45},{"Date":"2025-07-30","CO1":73.24,"CO2":72.47,"CO3":71.61,"CO4":70.91,"CO5":70.43,"CO6":70.09,"CO7":69.83},{"Date":"2025-07-31","CO1":72.53,"CO2":71.7,"CO3":70.8,"CO4":70.09,"CO5":69.62,"CO6":69.29,"CO7":69.05},{"Date":"2025-08-01","CO1":69.67,"CO2":68.76,"CO3":68.04,"CO4":67.58,"CO5":67.29,"CO6":67.09,"CO7":66.93},{"Date":"2025-08-04","CO1":68.76,"CO2":68.01,"CO3":67.45,"CO4":67.1,"CO5":66.87,"CO6":66.73,"CO7":66.61},{"Date":"2025-08-05","CO1":67.64,"CO2":66.97,"CO3":66.49,"CO4":66.19,"CO5":66.01,"CO6":65.9,"CO7":65.81},{"Date":"2025-08-06","CO1":66.89,"CO2":66.27,"CO3":65.82,"CO4":65.55,"CO5":65.39,"CO6":65.3,"CO7":65.23},{"Date":"2025-08-07","CO1":66.43,"CO2":65.9,"CO3":65.53,"CO4":65.32,"CO5":65.21,"CO6":65.15,"CO7":65.1},{"Date":"2025-08-08","CO1":66.59,"CO2":65.92,"CO3":65.49,"CO4":65.27,"CO5":65.15,"CO6":65.08,"CO7":65.02},{"Date":"2025-08-11","CO1":66.63,"CO2":66.06,"CO3":65.69,"CO4":65.5,"CO5":65.4,"CO6":65.34,"CO7":65.29},{"Date":"2025-08-12","CO1":66.12,"CO2":65.62,"CO3":65.28,"CO4":65.11,"CO5":65.03,"CO6":64.99,"CO7":64.96},{"Date":"2025-08-13","CO1":65.63,"CO2":65.15,"CO3":64.82,"CO4":64.66,"CO5":64.6,"CO6":64.58,"CO7":64.58},{"Date":"2025-08-14","CO1":66.84,"CO2":66.16,"CO3":65.69,"CO4":65.43,"CO5":65.29,"CO6":65.21,"CO7":65.17},{"Date":"2025-08-15","CO1":65.85,"CO2":65.3,"CO3":64.91,"CO4":64.7,"CO5":64.6,"CO6":64.56,"CO7":64.55},{"Date":"2025-08-18","CO1":66.6,"CO2":66.01,"CO3":65.57,"CO4":65.33,"CO5":65.19,"CO6":65.13,"CO7":65.1},{"Date":"2025-08-19","CO1":65.79,"CO2":65.3,"CO3":64.91,"CO4":64.71,"CO5":64.62,"CO6":64.59,"CO7":64.58},{"Date":"2025-08-20","CO1":66.84,"CO2":66.31,"CO3":65.89,"CO4":65.67,"CO5":65.55,"CO6":65.5,"CO7":65.47},{"Date":"2025-08-21","CO1":67.67,"CO2":67.12,"CO3":66.66,"CO4":66.39,"CO5":66.25,"CO6":66.19,"CO7":66.15},{"Date":"2025-08-22","CO1":67.73,"CO2":67.22,"CO3":66.77,"CO4":66.5,"CO5":66.35,"CO6":66.29,"CO7":66.24},{"Date":"2025-08-25","CO1":68.8,"CO2":68.22,"CO3":67.74,"CO4":67.45,"CO5":67.27,"CO6":67.18,"CO7":67.1},{"Date":"2025-08-26","CO1":67.22,"CO2":66.7,"CO3":66.27,"CO4":66.01,"CO5":65.86,"CO6":65.8,"CO7":65.76},{"Date":"2025-08-27","CO1":68.05,"CO2":67.44,"CO3":66.89,"CO4":66.54,"CO5":66.32,"CO6":66.22,"CO7":66.15},{"Date":"2025-08-28","CO1":68.62,"CO2":67.98,"CO3":67.42,"CO4":67.06,"CO5":66.84,"CO6":66.74,"CO7":66.67},{"Date":"2025-08-29","CO1":68.12,"CO2":67.48,"CO3":66.89,"CO4":66.5,"CO5":66.27,"CO6":66.16,"CO7":66.09},{"Date":"2025-09-01","CO1":68.15,"CO2":67.52,"CO3":67.08,"CO4":66.82,"CO5":66.68,"CO6":66.6,"CO7":66.54},{"Date":"2025-09-02","CO1":69.14,"CO2":68.59,"CO3":68.17,"CO4":67.9,"CO5":67.74,"CO6":67.65,"CO7":67.58},{"Date":"2025-09-03","CO1":67.6,"CO2":67.16,"CO3":66.83,"CO4":66.62,"CO5":66.51,"CO6":66.46,"CO7":66.43},{"Date":"2025-09-04","CO1":66.99,"CO2":66.53,"CO3":66.2,"CO4":65.97,"CO5":65.85,"CO6":65.79,"CO7":65.75},{"Date":"2025-09-05","CO1":65.5,"CO2":65.11,"CO3":64.83,"CO4":64.65,"CO5":64.57,"CO6":64.56,"CO7":64.56},{"Date":"2025-09-08","CO1":66.02,"CO2":65.67,"CO3":65.39,"CO4":65.21,"CO5":65.14,"CO6":65.13,"CO7":65.13},{"Date":"2025-09-09","CO1":66.39,"CO2":66.11,"CO3":65.86,"CO4":65.68,"CO5":65.59,"CO6":65.55,"CO7":65.53},{"Date":"2025-09-10","CO1":67.49,"CO2":67.16,"CO3":66.87,"CO4":66.66,"CO5":66.55,"CO6":66.47,"CO7":66.42},{"Date":"2025-09-11","CO1":66.37,"CO2":66.01,"CO3":65.73,"CO4":65.54,"CO5":65.45,"CO6":65.4,"CO7":65.37},{"Date":"2025-09-12","CO1":66.99,"CO2":66.54,"CO3":66.17,"CO4":65.95,"CO5":65.84,"CO6":65.78,"CO7":65.74},{"Date":"2025-09-15","CO1":67.44,"CO2":67.04,"CO3":66.69,"CO4":66.46,"CO5":66.34,"CO6":66.27,"CO7":66.22},{"Date":"2025-09-16","CO1":68.47,"CO2":68.01,"CO3":67.62,"CO4":67.35,"CO5":67.19,"CO6":67.09,"CO7":67.03},{"Date":"2025-09-17","CO1":67.95,"CO2":67.46,"CO3":67.07,"CO4":66.78,"CO5":66.62,"CO6":66.51,"CO7":66.44},{"Date":"2025-09-18","CO1":67.44,"CO2":66.92,"CO3":66.52,"CO4":66.24,"CO5":66.09,"CO6":66.0,"CO7":65.94},{"Date":"2025-09-19","CO1":66.68,"CO2":66.04,"CO3":65.6,"CO4":65.33,"CO5":65.19,"CO6":65.13,"CO7":65.09},{"Date":"2025-09-22","CO1":66.57,"CO2":65.97,"CO3":65.56,"CO4":65.32,"CO5":65.2,"CO6":65.16,"CO7":65.14},{"Date":"2025-09-23","CO1":67.63,"CO2":66.97,"CO3":66.5,"CO4":66.19,"CO5":66.03,"CO6":65.95,"CO7":65.9},{"Date":"2025-09-24","CO1":69.31,"CO2":68.46,"CO3":67.88,"CO4":67.46,"CO5":67.2,"CO6":67.04,"CO7":66.93},{"Date":"2025-09-25","CO1":69.42,"CO2":68.58,"CO3":68.03,"CO4":67.64,"CO5":67.38,"CO6":67.23,"CO7":67.13},{"Date":"2025-09-26","CO1":70.13,"CO2":69.22,"CO3":68.65,"CO4":68.23,"CO5":67.95,"CO6":67.79,"CO7":67.67},{"Date":"2025-09-29","CO1":67.97,"CO2":67.09,"CO3":66.67,"CO4":66.35,"CO5":66.15,"CO6":66.05,"CO7":65.99},{"Date":"2025-09-30","CO1":67.02,"CO2":66.03,"CO3":65.62,"CO4":65.32,"CO5":65.14,"CO6":65.06,"CO7":65.02},{"Date":"2025-10-01","CO1":65.35,"CO2":65.0,"CO3":64.75,"CO4":64.62,"CO5":64.57,"CO6":64.55,"CO7":64.53},{"Date":"2025-10-02","CO1":64.11,"CO2":63.81,"CO3":63.63,"CO4":63.56,"CO5":63.57,"CO6":63.61,"CO7":63.65},{"Date":"2025-10-03","CO1":64.53,"CO2":64.16,"CO3":63.94,"CO4":63.84,"CO5":63.83,"CO6":63.86,"CO7":63.88},{"Date":"2025-10-06","CO1":65.47,"CO2":65.07,"CO3":64.82,"CO4":64.7,"CO5":64.67,"CO6":64.68,"CO7":64.69},{"Date":"2025-10-07","CO1":65.45,"CO2":64.94,"CO3":64.62,"CO4":64.48,"CO5":64.44,"CO6":64.45,"CO7":64.46},{"Date":"2025-10-08","CO1":66.25,"CO2":65.68,"CO3":65.33,"CO4":65.17,"CO5":65.12,"CO6":65.1,"CO7":65.08},{"Date":"2025-10-09","CO1":65.22,"CO2":64.74,"CO3":64.45,"CO4":64.32,"CO5":64.29,"CO6":64.31,"CO7":64.32},{"Date":"2025-10-10","CO1":62.73,"CO2":62.28,"CO3":62.06,"CO4":61.99,"CO5":62.02,"CO6":62.09,"CO7":62.16},{"Date":"2025-10-13","CO1":63.32,"CO2":62.94,"CO3":62.75,"CO4":62.7,"CO5":62.75,"CO6":62.83,"CO7":62.9},{"Date":"2025-10-14","CO1":62.39,"CO2":62.02,"CO3":61.86,"CO4":61.85,"CO5":61.93,"CO6":62.04,"CO7":62.14},{"Date":"2025-10-15","CO1":61.91,"CO2":61.63,"CO3":61.51,"CO4":61.52,"CO5":61.62,"CO6":61.75,"CO7":61.86},{"Date":"2025-10-16","CO1":61.06,"CO2":60.79,"CO3":60.67,"CO4":60.68,"CO5":60.8,"CO6":60.94,"CO7":61.07},{"Date":"2025-10-17","CO1":61.29,"CO2":61.1,"CO3":61.04,"CO4":61.09,"CO5":61.22,"CO6":61.38,"CO7":61.53},{"Date":"2025-10-20","CO1":61.01,"CO2":60.88,"CO3":60.86,"CO4":60.93,"CO5":61.08,"CO6":61.26,"CO7":61.43},{"Date":"2025-10-21","CO1":61.32,"CO2":61.03,"CO3":60.94,"CO4":60.96,"CO5":61.07,"CO6":61.22,"CO7":61.36},{"Date":"2025-10-22","CO1":62.59,"CO2":62.23,"CO3":62.07,"CO4":62.03,"CO5":62.09,"CO6":62.2,"CO7":62.31},{"Date":"2025-10-23","CO1":65.99,"CO2":65.29,"CO3":64.67,"CO4":64.28,"CO5":64.06,"CO6":63.95,"CO7":63.87},{"Date":"2025-10-24","CO1":65.94,"CO2":65.2,"CO3":64.57,"CO4":64.18,"CO5":63.96,"CO6":63.86,"CO7":63.8},{"Date":"2025-10-27","CO1":65.62,"CO2":64.9,"CO3":64.32,"CO4":63.97,"CO5":63.8,"CO6":63.74,"CO7":63.72},{"Date":"2025-10-28","CO1":64.4,"CO2":63.83,"CO3":63.45,"CO4":63.27,"CO5":63.21,"CO6":63.23,"CO7":63.28},{"Date":"2025-10-29","CO1":64.92,"CO2":64.32,"CO3":63.89,"CO4":63.67,"CO5":63.6,"CO6":63.62,"CO7":63.65},{"Date":"2025-10-30","CO1":65.0,"CO2":64.37,"CO3":63.89,"CO4":63.64,"CO5":63.56,"CO6":63.57,"CO7":63.61},{"Date":"2025-10-31","CO1":65.07,"CO2":64.77,"CO3":64.2,"CO4":63.86,"CO5":63.7,"CO6":63.66,"CO7":63.67},{"Date":"2025-11-03","CO1":64.89,"CO2":64.44,"CO3":64.17,"CO4":64.04,"CO5":64.0,"CO6":63.99,"CO7":63.98},{"Date":"2025-11-04","CO1":64.44,"CO2":64.07,"CO3":63.86,"CO4":63.77,"CO5":63.75,"CO6":63.77,"CO7":63.78},{"Date":"2025-11-05","CO1":63.52,"CO2":63.24,"CO3":63.09,"CO4":63.04,"CO5":63.06,"CO6":63.09,"CO7":63.11},{"Date":"2025-11-06","CO1":63.38,"CO2":63.07,"CO3":62.9,"CO4":62.86,"CO5":62.87,"CO6":62.91,"CO7":62.92},{"Date":"2025-11-07","CO1":63.63,"CO2":63.39,"CO3":63.25,"CO4":63.21,"CO5":63.22,"CO6":63.24,"CO7":63.24},{"Date":"2025-11-10","CO1":64.06,"CO2":63.82,"CO3":63.69,"CO4":63.64,"CO5":63.64,"CO6":63.65,"CO7":63.63},{"Date":"2025-11-11","CO1":65.16,"CO2":64.87,"CO3":64.7,"CO4":64.62,"CO5":64.59,"CO6":64.56,"CO7":64.51},{"Date":"2025-11-12","CO1":62.71,"CO2":62.45,"CO3":62.31,"CO4":62.26,"CO5":62.27,"CO6":62.3,"CO7":62.3},{"Date":"2025-11-13","CO1":63.01,"CO2":62.64,"CO3":62.43,"CO4":62.34,"CO5":62.33,"CO6":62.34,"CO7":62.33},{"Date":"2025-11-14","CO1":64.39,"CO2":63.92,"CO3":63.62,"CO4":63.44,"CO5":63.37,"CO6":63.34,"CO7":63.29},{"Date":"2025-11-17","CO1":64.2,"CO2":63.76,"CO3":63.48,"CO4":63.32,"CO5":63.25,"CO6":63.23,"CO7":63.2},{"Date":"2025-11-18","CO1":64.89,"CO2":64.43,"CO3":64.11,"CO4":63.9,"CO5":63.8,"CO6":63.75,"CO7":63.69},{"Date":"2025-11-19","CO1":63.51,"CO2":63.0,"CO3":62.65,"CO4":62.45,"CO5":62.36,"CO6":62.33,"CO7":62.28},{"Date":"2025-11-20","CO1":63.38,"CO2":62.8,"CO3":62.41,"CO4":62.18,"CO5":62.09,"CO6":62.07,"CO7":62.04},{"Date":"2025-11-21","CO1":62.56,"CO2":61.94,"CO3":61.6,"CO4":61.42,"CO5":61.37,"CO6":61.38,"CO7":61.38},{"Date":"2025-11-24","CO1":63.37,"CO2":62.72,"CO3":62.36,"CO4":62.16,"CO5":62.09,"CO6":62.09,"CO7":62.08},{"Date":"2025-11-25","CO1":62.48,"CO2":61.8,"CO3":61.48,"CO4":61.34,"CO5":61.32,"CO6":61.37,"CO7":61.41},{"Date":"2025-11-26","CO1":63.13,"CO2":62.54,"CO3":62.17,"CO4":61.98,"CO5":61.93,"CO6":61.95,"CO7":61.97},{"Date":"2025-11-27","CO1":63.34,"CO2":62.87,"CO3":62.49,"CO4":62.28,"CO5":62.22,"CO6":62.24,"CO7":62.25},{"Date":"2025-11-28","CO1":63.2,"CO2":62.38,"CO3":61.97,"CO4":61.73,"CO5":61.65,"CO6":61.65,"CO7":61.64},{"Date":"2025-12-01","CO1":63.17,"CO2":62.78,"CO3":62.54,"CO4":62.45,"CO5":62.44,"CO6":62.43,"CO7":62.41},{"Date":"2025-12-02","CO1":62.45,"CO2":62.05,"CO3":61.82,"CO4":61.73,"CO5":61.72,"CO6":61.72,"CO7":61.7},{"Date":"2025-12-03","CO1":62.67,"CO2":62.28,"CO3":62.06,"CO4":61.97,"CO5":61.94,"CO6":61.92,"CO7":61.89},{"Date":"2025-12-04","CO1":63.26,"CO2":62.86,"CO3":62.61,"CO4":62.48,"CO5":62.42,"CO6":62.37,"CO7":62.31},{"Date":"2025-12-05","CO1":63.75,"CO2":63.39,"CO3":63.14,"CO4":63.0,"CO5":62.92,"CO6":62.86,"CO7":62.78},{"Date":"2025-12-08","CO1":62.49,"CO2":62.15,"CO3":61.93,"CO4":61.82,"CO5":61.77,"CO6":61.74,"CO7":61.69},{"Date":"2025-12-09","CO1":61.94,"CO2":61.65,"CO3":61.47,"CO4":61.39,"CO5":61.38,"CO6":61.38,"CO7":61.36},{"Date":"2025-12-10","CO1":62.21,"CO2":61.87,"CO3":61.65,"CO4":61.56,"CO5":61.55,"CO6":61.56,"CO7":61.54},{"Date":"2025-12-11","CO1":61.28,"CO2":61.06,"CO3":60.9,"CO4":60.85,"CO5":60.87,"CO6":60.9,"CO7":60.9},{"Date":"2025-12-12","CO1":61.12,"CO2":60.84,"CO3":60.65,"CO4":60.57,"CO5":60.57,"CO6":60.59,"CO7":60.6},{"Date":"2025-12-15","CO1":60.56,"CO2":60.3,"CO3":60.17,"CO4":60.16,"CO5":60.22,"CO6":60.29,"CO7":60.35},{"Date":"2025-12-16","CO1":58.92,"CO2":58.67,"CO3":58.57,"CO4":58.59,"CO5":58.68,"CO6":58.79,"CO7":58.88},{"Date":"2025-12-17","CO1":59.68,"CO2":59.4,"CO3":59.25,"CO4":59.24,"CO5":59.29,"CO6":59.36,"CO7":59.41},{"Date":"2025-12-18","CO1":59.82,"CO2":59.5,"CO3":59.36,"CO4":59.33,"CO5":59.35,"CO6":59.4,"CO7":59.43},{"Date":"2025-12-19","CO1":60.47,"CO2":60.05,"CO3":59.83,"CO4":59.75,"CO5":59.74,"CO6":59.76,"CO7":59.77},{"Date":"2025-12-22","CO1":62.07,"CO2":61.58,"CO3":61.29,"CO4":61.14,"CO5":61.06,"CO6":61.03,"CO7":60.99},{"Date":"2025-12-23","CO1":62.38,"CO2":61.87,"CO3":61.54,"CO4":61.38,"CO5":61.3,"CO6":61.27,"CO7":61.23},{"Date":"2025-12-24","CO1":62.24,"CO2":61.8,"CO3":61.5,"CO4":61.37,"CO5":61.32,"CO6":61.3,"CO7":61.28},{"Date":"2025-12-26","CO1":60.64,"CO2":60.24,"CO3":59.97,"CO4":59.85,"CO5":59.83,"CO6":59.85,"CO7":59.86},{"Date":"2025-12-29","CO1":61.94,"CO2":61.49,"CO3":61.15,"CO4":60.98,"CO5":60.92,"CO6":60.89,"CO7":60.87},{"Date":"2025-12-30","CO1":61.92,"CO2":61.33,"CO3":61.03,"CO4":60.87,"CO5":60.81,"CO6":60.77,"CO7":60.74},{"Date":"2025-12-31","CO1":60.85,"CO2":60.49,"CO3":60.32,"CO4":60.25,"CO5":60.22,"CO6":60.19,"CO7":60.17},{"Date":"2026-01-02","CO1":60.75,"CO2":60.43,"CO3":60.28,"CO4":60.24,"CO5":60.24,"CO6":60.24,"CO7":60.24},{"Date":"2026-01-05","CO1":61.76,"CO2":61.37,"CO3":61.16,"CO4":61.05,"CO5":60.98,"CO6":60.91,"CO7":60.85},{"Date":"2026-01-06","CO1":60.7,"CO2":60.31,"CO3":60.1,"CO4":60.0,"CO5":59.95,"CO6":59.92,"CO7":59.89},{"Date":"2026-01-07","CO1":59.96,"CO2":59.58,"CO3":59.4,"CO4":59.34,"CO5":59.31,"CO6":59.29,"CO7":59.27},{"Date":"2026-01-08","CO1":61.99,"CO2":61.49,"CO3":61.22,"CO4":61.08,"CO5":61.01,"CO6":60.95,"CO7":60.89},{"Date":"2026-01-09","CO1":63.34,"CO2":62.79,"CO3":62.47,"CO4":62.29,"CO5":62.17,"CO6":62.05,"CO7":61.94},{"Date":"2026-01-12","CO1":63.87,"CO2":63.22,"CO3":62.85,"CO4":62.64,"CO5":62.5,"CO6":62.37,"CO7":62.25},{"Date":"2026-01-13","CO1":65.47,"CO2":64.75,"CO3":64.29,"CO4":63.99,"CO5":63.77,"CO6":63.58,"CO7":63.41},{"Date":"2026-01-14","CO1":66.52,"CO2":65.83,"CO3":65.36,"CO4":65.03,"CO5":64.76,"CO6":64.53,"CO7":64.32},{"Date":"2026-01-15","CO1":63.76,"CO2":63.08,"CO3":62.7,"CO4":62.47,"CO5":62.3,"CO6":62.17,"CO7":62.05},{"Date":"2026-01-16","CO1":64.13,"CO2":63.46,"CO3":63.05,"CO4":62.8,"CO5":62.6,"CO6":62.44,"CO7":62.31},{"Date":"2026-01-19","CO1":63.94,"CO2":63.22,"CO3":62.81,"CO4":62.54,"CO5":62.34,"CO6":62.18,"CO7":62.05},{"Date":"2026-01-20","CO1":64.92,"CO2":64.19,"CO3":63.76,"CO4":63.48,"CO5":63.27,"CO6":63.1,"CO7":62.96},{"Date":"2026-01-21","CO1":65.24,"CO2":64.53,"CO3":64.13,"CO4":63.88,"CO5":63.69,"CO6":63.54,"CO7":63.41},{"Date":"2026-01-22","CO1":64.06,"CO2":63.34,"CO3":62.97,"CO4":62.76,"CO5":62.61,"CO6":62.5,"CO7":62.41},{"Date":"2026-01-23","CO1":65.88,"CO2":65.07,"CO3":64.56,"CO4":64.24,"CO5":64.0,"CO6":63.81,"CO7":63.65},{"Date":"2026-01-26","CO1":65.59,"CO2":64.77,"CO3":64.31,"CO4":64.04,"CO5":63.85,"CO6":63.69,"CO7":63.56},{"Date":"2026-01-27","CO1":67.57,"CO2":66.59,"CO3":65.96,"CO4":65.55,"CO5":65.24,"CO6":64.99,"CO7":64.77},{"Date":"2026-01-28","CO1":68.4,"CO2":67.37,"CO3":66.74,"CO4":66.28,"CO5":65.91,"CO6":65.6,"CO7":65.33},{"Date":"2026-01-29","CO1":70.71,"CO2":69.59,"CO3":68.88,"CO4":68.3,"CO5":67.8,"CO6":67.37,"CO7":66.98},{"Date":"2026-01-30","CO1":70.69,"CO2":69.32,"CO3":68.61,"CO4":68.04,"CO5":67.58,"CO6":67.18,"CO7":66.82},{"Date":"2026-02-02","CO1":66.3,"CO2":65.57,"CO3":64.99,"CO4":64.55,"CO5":64.17,"CO6":63.87,"CO7":63.62},{"Date":"2026-02-03","CO1":67.33,"CO2":66.68,"CO3":66.16,"CO4":65.74,"CO5":65.37,"CO6":65.07,"CO7":64.81},{"Date":"2026-02-04","CO1":69.46,"CO2":68.75,"CO3":68.15,"CO4":67.65,"CO5":67.22,"CO6":66.85,"CO7":66.53},{"Date":"2026-02-05","CO1":67.55,"CO2":66.98,"CO3":66.49,"CO4":66.08,"CO5":65.72,"CO6":65.41,"CO7":65.15},{"Date":"2026-02-06","CO1":68.05,"CO2":67.47,"CO3":67.0,"CO4":66.6,"CO5":66.26,"CO6":65.96,"CO7":65.69},{"Date":"2026-02-09","CO1":69.04,"CO2":68.42,"CO3":67.93,"CO4":67.52,"CO5":67.17,"CO6":66.85,"CO7":66.56},{"Date":"2026-02-10","CO1":68.8,"CO2":68.11,"CO3":67.61,"CO4":67.21,"CO5":66.88,"CO6":66.58,"CO7":66.3},{"Date":"2026-02-11","CO1":69.4,"CO2":68.75,"CO3":68.25,"CO4":67.84,"CO5":67.48,"CO6":67.14,"CO7":66.81},{"Date":"2026-02-12","CO1":67.52,"CO2":66.91,"CO3":66.46,"CO4":66.08,"CO5":65.75,"CO6":65.44,"CO7":65.17},{"Date":"2026-02-13","CO1":67.75,"CO2":67.09,"CO3":66.6,"CO4":66.2,"CO5":65.82,"CO6":65.48,"CO7":65.17},{"Date":"2026-02-16","CO1":68.65,"CO2":67.97,"CO3":67.45,"CO4":67.01,"CO5":66.61,"CO6":66.24,"CO7":65.92},{"Date":"2026-02-17","CO1":67.42,"CO2":66.87,"CO3":66.42,"CO4":66.02,"CO5":65.64,"CO6":65.3,"CO7":65.0},{"Date":"2026-02-18","CO1":70.35,"CO2":69.77,"CO3":69.21,"CO4":68.69,"CO5":68.19,"CO6":67.71,"CO7":67.26},{"Date":"2026-02-19","CO1":71.66,"CO2":71.27,"CO3":70.68,"CO4":70.04,"CO5":69.41,"CO6":68.83,"CO7":68.3},{"Date":"2026-02-20","CO1":71.76,"CO2":71.3,"CO3":70.66,"CO4":70.01,"CO5":69.39,"CO6":68.81,"CO7":68.3},{"Date":"2026-02-23","CO1":71.49,"CO2":71.11,"CO3":70.54,"CO4":69.94,"CO5":69.36,"CO6":68.82,"CO7":68.33},{"Date":"2026-02-24","CO1":70.77,"CO2":70.58,"CO3":70.16,"CO4":69.66,"CO5":69.14,"CO6":68.65,"CO7":68.21},{"Date":"2026-02-25","CO1":70.85,"CO2":70.69,"CO3":70.25,"CO4":69.76,"CO5":69.25,"CO6":68.75,"CO7":68.3},{"Date":"2026-02-26","CO1":70.75,"CO2":70.84,"CO3":70.42,"CO4":69.86,"CO5":69.26,"CO6":68.69,"CO7":68.19},{"Date":"2026-02-27","CO1":72.48,"CO2":72.87,"CO3":72.29,"CO4":71.61,"CO5":70.88,"CO6":70.2,"CO7":69.61},{"Date":"2026-03-02","CO1":77.74,"CO2":76.16,"CO3":74.81,"CO4":73.58,"CO5":72.48,"CO6":71.52,"CO7":70.71},{"Date":"2026-03-03","CO1":81.4,"CO2":78.38,"CO3":76.28,"CO4":74.67,"CO5":73.37,"CO6":72.25,"CO7":71.3},{"Date":"2026-03-04","CO1":81.4,"CO2":78.01,"CO3":75.93,"CO4":74.39,"CO5":73.2,"CO6":72.2,"CO7":71.37},{"Date":"2026-03-05","CO1":85.41,"CO2":81.04,"CO3":77.92,"CO4":75.96,"CO5":74.66,"CO6":73.59,"CO7":72.7},{"Date":"2026-03-06","CO1":92.69,"CO2":87.2,"CO3":82.88,"CO4":79.86,"CO5":77.82,"CO6":76.27,"CO7":75.11},{"Date":"2026-03-09","CO1":98.96,"CO2":93.72,"CO3":88.95,"CO4":85.23,"CO5":82.4,"CO6":80.15,"CO7":78.41},{"Date":"2026-03-10","CO1":87.8,"CO2":85.27,"CO3":82.6,"CO4":80.29,"CO5":78.44,"CO6":76.91,"CO7":75.69},{"Date":"2026-03-11","CO1":91.98,"CO2":89.35,"CO3":86.71,"CO4":84.32,"CO5":82.28,"CO6":80.51,"CO7":79.03},{"Date":"2026-03-12","CO1":100.46,"CO2":96.63,"CO3":92.88,"CO4":89.55,"CO5":86.8,"CO6":84.42,"CO7":82.41},{"Date":"2026-03-13","CO1":103.14,"CO2":98.91,"CO3":94.67,"CO4":91.03,"CO5":88.11,"CO6":85.66,"CO7":83.64},{"Date":"2026-03-16","CO1":100.21,"CO2":96.04,"CO3":91.76,"CO4":88.22,"CO5":85.52,"CO6":83.4,"CO7":81.75},{"Date":"2026-03-17","CO1":103.42,"CO2":99.39,"CO3":95.02,"CO4":91.21,"CO5":88.21,"CO6":85.79,"CO7":83.95},{"Date":"2026-03-18","CO1":107.38,"CO2":102.92,"CO3":98.16,"CO4":94.01,"CO5":90.76,"CO6":88.19,"CO7":86.26},{"Date":"2026-03-19","CO1":108.65,"CO2":103.78,"CO3":98.46,"CO4":94.05,"CO5":90.89,"CO6":88.39,"CO7":86.57},{"Date":"2026-03-20","CO1":112.19,"CO2":106.41,"CO3":100.33,"CO4":95.37,"CO5":91.86,"CO6":89.17,"CO7":87.29},{"Date":"2026-03-23","CO1":99.94,"CO2":95.92,"CO3":91.68,"CO4":87.96,"CO5":85.31,"CO6":83.22,"CO7":81.71},{"Date":"2026-03-24","CO1":104.49,"CO2":100.23,"CO3":95.6,"CO4":91.56,"CO5":88.68,"CO6":86.45,"CO7":84.82},{"Date":"2026-03-25","CO1":102.22,"CO2":97.26,"CO3":92.93,"CO4":89.39,"CO5":86.92,"CO6":84.98,"CO7":83.5},{"Date":"2026-03-26","CO1":108.01,"CO2":101.89,"CO3":96.68,"CO4":92.69,"CO5":89.82,"CO6":87.58,"CO7":85.84},{"Date":"2026-03-27","CO1":112.57,"CO2":105.32,"CO3":98.73,"CO4":93.82,"CO5":90.35,"CO6":87.77,"CO7":85.91},{"Date":"2026-03-30","CO1":112.78,"CO2":107.39,"CO3":100.29,"CO4":94.77,"CO5":90.74,"CO6":87.77,"CO7":85.68},{"Date":"2026-03-31","CO1":118.35,"CO2":103.97,"CO3":96.17,"CO4":90.17,"CO5":85.91,"CO6":82.95,"CO7":81.01},{"Date":"2026-04-01","CO1":101.16,"CO2":93.5,"CO3":87.82,"CO4":83.96,"CO5":81.25,"CO6":79.46,"CO7":78.15},{"Date":"2026-04-02","CO1":109.03,"CO2":99.44,"CO3":91.43,"CO4":85.95,"CO5":82.54,"CO6":80.47,"CO7":79.02},{"Date":"2026-04-06","CO1":108.87,"CO2":99.33,"CO3":91.32,"CO4":85.98,"CO5":82.62,"CO6":80.84,"CO7":79.47}];
+const RAW=[{"Date":"2025-01-02","CO1":75.93,"CO2":75.44,"CO3":75.01,"CO4":74.64,"CO5":74.27,"CO6":73.9,"CO7":73.55},{"Date":"2025-01-03","CO1":76.51,"CO2":75.93,"CO3":75.47,"CO4":75.07,"CO5":74.69,"CO6":74.32,"CO7":73.96},{"Date":"2025-01-06","CO1":76.3,"CO2":75.71,"CO3":75.24,"CO4":74.86,"CO5":74.51,"CO6":74.16,"CO7":73.82},{"Date":"2025-01-07","CO1":77.05,"CO2":76.4,"CO3":75.87,"CO4":75.45,"CO5":75.06,"CO6":74.67,"CO7":74.3},{"Date":"2025-01-08","CO1":76.16,"CO2":75.58,"CO3":75.11,"CO4":74.72,"CO5":74.36,"CO6":74.0,"CO7":73.65},{"Date":"2025-01-09","CO1":76.92,"CO2":76.25,"CO3":75.71,"CO4":75.26,"CO5":74.85,"CO6":74.46,"CO7":74.07},{"Date":"2025-01-10","CO1":79.76,"CO2":78.85,"CO3":78.06,"CO4":77.37,"CO5":76.75,"CO6":76.17,"CO7":75.64},{"Date":"2025-01-13","CO1":81.01,"CO2":79.65,"CO3":78.52,"CO4":77.59,"CO5":76.8,"CO6":76.11,"CO7":75.48},{"Date":"2025-01-14","CO1":79.92,"CO2":78.88,"CO3":77.93,"CO4":77.13,"CO5":76.46,"CO6":75.88,"CO7":75.34},{"Date":"2025-01-15","CO1":82.03,"CO2":80.66,"CO3":79.48,"CO4":78.5,"CO5":77.69,"CO6":76.98,"CO7":76.34},{"Date":"2025-01-16","CO1":81.29,"CO2":79.91,"CO3":78.72,"CO4":77.74,"CO5":76.94,"CO6":76.24,"CO7":75.61},{"Date":"2025-01-17","CO1":80.79,"CO2":79.57,"CO3":78.43,"CO4":77.45,"CO5":76.66,"CO6":75.98,"CO7":75.35},{"Date":"2025-01-20","CO1":80.15,"CO2":79.1,"CO3":78.13,"CO4":77.26,"CO5":76.54,"CO6":75.91,"CO7":75.33},{"Date":"2025-01-21","CO1":79.29,"CO2":78.4,"CO3":77.58,"CO4":76.81,"CO5":76.16,"CO6":75.58,"CO7":75.04},{"Date":"2025-01-22","CO1":79.0,"CO2":78.15,"CO3":77.37,"CO4":76.67,"CO5":76.07,"CO6":75.53,"CO7":75.03},{"Date":"2025-01-23","CO1":78.29,"CO2":77.56,"CO3":76.91,"CO4":76.29,"CO5":75.75,"CO6":75.26,"CO7":74.79},{"Date":"2025-01-24","CO1":78.5,"CO2":77.55,"CO3":76.79,"CO4":76.13,"CO5":75.56,"CO6":75.05,"CO7":74.57},{"Date":"2025-01-27","CO1":77.08,"CO2":76.18,"CO3":75.42,"CO4":74.76,"CO5":74.21,"CO6":73.73,"CO7":73.28},{"Date":"2025-01-28","CO1":77.49,"CO2":76.49,"CO3":75.6,"CO4":74.83,"CO5":74.19,"CO6":73.65,"CO7":73.16},{"Date":"2025-01-29","CO1":76.58,"CO2":75.61,"CO3":74.8,"CO4":74.1,"CO5":73.54,"CO6":73.05,"CO7":72.61},{"Date":"2025-01-30","CO1":76.87,"CO2":75.89,"CO3":75.12,"CO4":74.44,"CO5":73.87,"CO6":73.37,"CO7":72.91},{"Date":"2025-01-31","CO1":76.76,"CO2":75.67,"CO3":74.92,"CO4":74.24,"CO5":73.67,"CO6":73.17,"CO7":72.71},{"Date":"2025-02-03","CO1":75.96,"CO2":75.14,"CO3":74.41,"CO4":73.79,"CO5":73.26,"CO6":72.77,"CO7":72.31},{"Date":"2025-02-04","CO1":76.2,"CO2":75.56,"CO3":74.92,"CO4":74.33,"CO5":73.8,"CO6":73.32,"CO7":72.87},{"Date":"2025-02-05","CO1":74.61,"CO2":74.09,"CO3":73.54,"CO4":73.02,"CO5":72.54,"CO6":72.1,"CO7":71.69},{"Date":"2025-02-06","CO1":74.29,"CO2":73.84,"CO3":73.39,"CO4":72.95,"CO5":72.52,"CO6":72.11,"CO7":71.74},{"Date":"2025-02-07","CO1":74.66,"CO2":74.26,"CO3":73.83,"CO4":73.41,"CO5":72.99,"CO6":72.57,"CO7":72.19},{"Date":"2025-02-10","CO1":75.87,"CO2":75.43,"CO3":74.96,"CO4":74.49,"CO5":74.02,"CO6":73.56,"CO7":73.12},{"Date":"2025-02-11","CO1":77.0,"CO2":76.62,"CO3":76.15,"CO4":75.67,"CO5":75.18,"CO6":74.69,"CO7":74.24},{"Date":"2025-02-12","CO1":75.18,"CO2":74.87,"CO3":74.49,"CO4":74.08,"CO5":73.65,"CO6":73.21,"CO7":72.8},{"Date":"2025-02-13","CO1":75.02,"CO2":74.66,"CO3":74.25,"CO4":73.83,"CO5":73.41,"CO6":72.98,"CO7":72.58},{"Date":"2025-02-14","CO1":74.74,"CO2":74.46,"CO3":74.09,"CO4":73.7,"CO5":73.31,"CO6":72.91,"CO7":72.53},{"Date":"2025-02-17","CO1":75.22,"CO2":74.93,"CO3":74.55,"CO4":74.15,"CO5":73.74,"CO6":73.32,"CO7":72.92},{"Date":"2025-02-18","CO1":75.84,"CO2":75.43,"CO3":74.99,"CO4":74.56,"CO5":74.11,"CO6":73.66,"CO7":73.23},{"Date":"2025-02-19","CO1":76.04,"CO2":75.67,"CO3":75.24,"CO4":74.8,"CO5":74.35,"CO6":73.9,"CO7":73.48},{"Date":"2025-02-20","CO1":76.48,"CO2":76.05,"CO3":75.61,"CO4":75.19,"CO5":74.75,"CO6":74.3,"CO7":73.87},{"Date":"2025-02-21","CO1":74.43,"CO2":74.05,"CO3":73.68,"CO4":73.3,"CO5":72.91,"CO6":72.51,"CO7":72.13},{"Date":"2025-02-24","CO1":74.78,"CO2":74.31,"CO3":73.89,"CO4":73.49,"CO5":73.07,"CO6":72.66,"CO7":72.26},{"Date":"2025-02-25","CO1":73.02,"CO2":72.5,"CO3":72.09,"CO4":71.71,"CO5":71.32,"CO6":70.94,"CO7":70.57},{"Date":"2025-02-26","CO1":72.53,"CO2":72.07,"CO3":71.61,"CO4":71.19,"CO5":70.78,"CO6":70.37,"CO7":69.99},{"Date":"2025-02-27","CO1":74.04,"CO2":73.57,"CO3":73.06,"CO4":72.57,"CO5":72.09,"CO6":71.62,"CO7":71.19},{"Date":"2025-02-28","CO1":73.18,"CO2":72.81,"CO3":72.28,"CO4":71.79,"CO5":71.3,"CO6":70.85,"CO7":70.43},{"Date":"2025-03-03","CO1":71.62,"CO2":71.16,"CO3":70.76,"CO4":70.36,"CO5":69.98,"CO6":69.63,"CO7":69.31},{"Date":"2025-03-04","CO1":71.04,"CO2":70.56,"CO3":70.16,"CO4":69.78,"CO5":69.43,"CO6":69.12,"CO7":68.84},{"Date":"2025-03-05","CO1":69.3,"CO2":68.9,"CO3":68.56,"CO4":68.22,"CO5":67.9,"CO6":67.62,"CO7":67.38},{"Date":"2025-03-06","CO1":69.46,"CO2":68.98,"CO3":68.58,"CO4":68.2,"CO5":67.85,"CO6":67.55,"CO7":67.29},{"Date":"2025-03-07","CO1":70.36,"CO2":69.88,"CO3":69.45,"CO4":69.05,"CO5":68.69,"CO6":68.37,"CO7":68.1},{"Date":"2025-03-10","CO1":69.28,"CO2":68.79,"CO3":68.33,"CO4":67.91,"CO5":67.54,"CO6":67.21,"CO7":66.94},{"Date":"2025-03-11","CO1":69.56,"CO2":69.05,"CO3":68.57,"CO4":68.13,"CO5":67.74,"CO6":67.41,"CO7":67.13},{"Date":"2025-03-12","CO1":70.95,"CO2":70.45,"CO3":69.96,"CO4":69.52,"CO5":69.11,"CO6":68.75,"CO7":68.45},{"Date":"2025-03-13","CO1":69.88,"CO2":69.4,"CO3":68.94,"CO4":68.52,"CO5":68.14,"CO6":67.81,"CO7":67.54},{"Date":"2025-03-14","CO1":70.58,"CO2":70.06,"CO3":69.55,"CO4":69.1,"CO5":68.69,"CO6":68.34,"CO7":68.05},{"Date":"2025-03-17","CO1":71.07,"CO2":70.6,"CO3":70.12,"CO4":69.67,"CO5":69.25,"CO6":68.89,"CO7":68.58},{"Date":"2025-03-18","CO1":70.56,"CO2":70.12,"CO3":69.7,"CO4":69.27,"CO5":68.87,"CO6":68.52,"CO7":68.24},{"Date":"2025-03-19","CO1":70.78,"CO2":70.32,"CO3":69.87,"CO4":69.43,"CO5":69.02,"CO6":68.66,"CO7":68.37},{"Date":"2025-03-20","CO1":72.0,"CO2":71.47,"CO3":70.96,"CO4":70.47,"CO5":70.02,"CO6":69.63,"CO7":69.3},{"Date":"2025-03-21","CO1":72.16,"CO2":71.61,"CO3":71.08,"CO4":70.57,"CO5":70.1,"CO6":69.69,"CO7":69.34},{"Date":"2025-03-24","CO1":73.0,"CO2":72.37,"CO3":71.8,"CO4":71.27,"CO5":70.76,"CO6":70.31,"CO7":69.93},{"Date":"2025-03-25","CO1":73.02,"CO2":72.39,"CO3":71.82,"CO4":71.29,"CO5":70.77,"CO6":70.31,"CO7":69.93},{"Date":"2025-03-26","CO1":73.79,"CO2":73.06,"CO3":72.44,"CO4":71.86,"CO5":71.33,"CO6":70.85,"CO7":70.45},{"Date":"2025-03-27","CO1":74.03,"CO2":73.34,"CO3":72.68,"CO4":72.09,"CO5":71.56,"CO6":71.1,"CO7":70.71},{"Date":"2025-03-28","CO1":73.63,"CO2":72.76,"CO3":72.02,"CO4":71.38,"CO5":70.82,"CO6":70.35,"CO7":69.95},{"Date":"2025-03-31","CO1":74.74,"CO2":74.77,"CO3":73.97,"CO4":73.25,"CO5":72.6,"CO6":72.04,"CO7":71.55},{"Date":"2025-04-01","CO1":74.49,"CO2":73.75,"CO3":73.08,"CO4":72.49,"CO5":71.98,"CO6":71.54,"CO7":71.17},{"Date":"2025-04-02","CO1":74.95,"CO2":74.14,"CO3":73.41,"CO4":72.79,"CO5":72.26,"CO6":71.81,"CO7":71.42},{"Date":"2025-04-03","CO1":70.14,"CO2":69.42,"CO3":68.8,"CO4":68.3,"CO5":67.91,"CO6":67.6,"CO7":67.34},{"Date":"2025-04-04","CO1":65.58,"CO2":64.95,"CO3":64.47,"CO4":64.11,"CO5":63.86,"CO6":63.69,"CO7":63.57},{"Date":"2025-04-07","CO1":64.21,"CO2":63.82,"CO3":63.53,"CO4":63.31,"CO5":63.19,"CO6":63.12,"CO7":63.1},{"Date":"2025-04-08","CO1":62.82,"CO2":62.34,"CO3":61.96,"CO4":61.69,"CO5":61.54,"CO6":61.47,"CO7":61.44},{"Date":"2025-04-09","CO1":65.48,"CO2":64.88,"CO3":64.39,"CO4":64.0,"CO5":63.73,"CO6":63.52,"CO7":63.36},{"Date":"2025-04-10","CO1":63.33,"CO2":62.78,"CO3":62.36,"CO4":62.08,"CO5":61.93,"CO6":61.85,"CO7":61.8},{"Date":"2025-04-11","CO1":64.76,"CO2":64.01,"CO3":63.42,"CO4":63.02,"CO5":62.77,"CO6":62.61,"CO7":62.5},{"Date":"2025-04-14","CO1":64.88,"CO2":64.22,"CO3":63.7,"CO4":63.34,"CO5":63.12,"CO6":63.0,"CO7":62.92},{"Date":"2025-04-15","CO1":64.67,"CO2":63.88,"CO3":63.31,"CO4":62.92,"CO5":62.68,"CO6":62.55,"CO7":62.46},{"Date":"2025-04-16","CO1":65.85,"CO2":64.96,"CO3":64.32,"CO4":63.85,"CO5":63.54,"CO6":63.35,"CO7":63.22},{"Date":"2025-04-17","CO1":67.96,"CO2":67.0,"CO3":66.33,"CO4":65.85,"CO5":65.51,"CO6":65.28,"CO7":65.11},{"Date":"2025-04-21","CO1":66.26,"CO2":65.3,"CO3":64.63,"CO4":64.17,"CO5":63.86,"CO6":63.65,"CO7":63.5},{"Date":"2025-04-22","CO1":67.44,"CO2":66.48,"CO3":65.79,"CO4":65.28,"CO5":64.95,"CO6":64.72,"CO7":64.56},{"Date":"2025-04-23","CO1":66.12,"CO2":65.18,"CO3":64.57,"CO4":64.13,"CO5":63.84,"CO6":63.67,"CO7":63.56},{"Date":"2025-04-24","CO1":66.55,"CO2":65.65,"CO3":65.1,"CO4":64.71,"CO5":64.45,"CO6":64.29,"CO7":64.17},{"Date":"2025-04-25","CO1":66.87,"CO2":65.8,"CO3":65.24,"CO4":64.86,"CO5":64.63,"CO6":64.49,"CO7":64.4},{"Date":"2025-04-28","CO1":65.86,"CO2":64.79,"CO3":64.31,"CO4":64.01,"CO5":63.84,"CO6":63.76,"CO7":63.7},{"Date":"2025-04-29","CO1":64.25,"CO2":63.28,"CO3":62.91,"CO4":62.69,"CO5":62.59,"CO6":62.56,"CO7":62.57},{"Date":"2025-04-30","CO1":63.12,"CO2":61.06,"CO3":60.67,"CO4":60.43,"CO5":60.32,"CO6":60.31,"CO7":60.32},{"Date":"2025-05-01","CO1":62.13,"CO2":61.72,"CO3":61.43,"CO4":61.27,"CO5":61.22,"CO6":61.22,"CO7":61.26},{"Date":"2025-05-02","CO1":61.29,"CO2":60.93,"CO3":60.7,"CO4":60.6,"CO5":60.62,"CO6":60.68,"CO7":60.78},{"Date":"2025-05-05","CO1":60.23,"CO2":59.89,"CO3":59.7,"CO4":59.65,"CO5":59.73,"CO6":59.86,"CO7":60.01},{"Date":"2025-05-06","CO1":62.15,"CO2":61.75,"CO3":61.48,"CO4":61.37,"CO5":61.4,"CO6":61.48,"CO7":61.6},{"Date":"2025-05-07","CO1":61.12,"CO2":60.79,"CO3":60.52,"CO4":60.4,"CO5":60.42,"CO6":60.5,"CO7":60.61},{"Date":"2025-05-08","CO1":62.84,"CO2":62.45,"CO3":62.12,"CO4":61.95,"CO5":61.9,"CO6":61.9,"CO7":61.96},{"Date":"2025-05-09","CO1":63.91,"CO2":63.43,"CO3":63.02,"CO4":62.78,"CO5":62.68,"CO6":62.63,"CO7":62.64},{"Date":"2025-05-12","CO1":64.96,"CO2":64.55,"CO3":64.18,"CO4":63.95,"CO5":63.85,"CO6":63.8,"CO7":63.81},{"Date":"2025-05-13","CO1":66.63,"CO2":66.13,"CO3":65.68,"CO4":65.36,"CO5":65.18,"CO6":65.08,"CO7":65.04},{"Date":"2025-05-14","CO1":66.09,"CO2":65.58,"CO3":65.14,"CO4":64.84,"CO5":64.68,"CO6":64.6,"CO7":64.59},{"Date":"2025-05-15","CO1":64.53,"CO2":64.06,"CO3":63.67,"CO4":63.43,"CO5":63.33,"CO6":63.32,"CO7":63.37},{"Date":"2025-05-16","CO1":65.41,"CO2":64.78,"CO3":64.29,"CO4":63.94,"CO5":63.77,"CO6":63.7,"CO7":63.71},{"Date":"2025-05-19","CO1":65.54,"CO2":64.8,"CO3":64.24,"CO4":63.84,"CO5":63.63,"CO6":63.54,"CO7":63.54},{"Date":"2025-05-20","CO1":65.38,"CO2":64.76,"CO3":64.26,"CO4":63.91,"CO5":63.75,"CO6":63.71,"CO7":63.74},{"Date":"2025-05-21","CO1":64.91,"CO2":64.38,"CO3":63.89,"CO4":63.55,"CO5":63.41,"CO6":63.4,"CO7":63.45},{"Date":"2025-05-22","CO1":64.44,"CO2":63.92,"CO3":63.43,"CO4":63.08,"CO5":62.94,"CO6":62.94,"CO7":63.01},{"Date":"2025-05-23","CO1":64.78,"CO2":64.21,"CO3":63.67,"CO4":63.29,"CO5":63.14,"CO6":63.15,"CO7":63.24},{"Date":"2025-05-26","CO1":64.74,"CO2":64.12,"CO3":63.55,"CO4":63.15,"CO5":63.0,"CO6":63.03,"CO7":63.13},{"Date":"2025-05-27","CO1":64.09,"CO2":63.57,"CO3":63.03,"CO4":62.66,"CO5":62.54,"CO6":62.58,"CO7":62.69},{"Date":"2025-05-28","CO1":64.9,"CO2":64.32,"CO3":63.73,"CO4":63.32,"CO5":63.15,"CO6":63.15,"CO7":63.23},{"Date":"2025-05-29","CO1":64.15,"CO2":63.35,"CO3":62.72,"CO4":62.29,"CO5":62.11,"CO6":62.1,"CO7":62.18},{"Date":"2025-05-30","CO1":63.9,"CO2":62.78,"CO3":62.05,"CO4":61.57,"CO5":61.4,"CO6":61.41,"CO7":61.51},{"Date":"2025-06-02","CO1":64.63,"CO2":63.87,"CO3":63.32,"CO4":63.03,"CO5":62.94,"CO6":62.96,"CO7":63.03},{"Date":"2025-06-03","CO1":65.63,"CO2":64.94,"CO3":64.42,"CO4":64.14,"CO5":64.04,"CO6":64.05,"CO7":64.1},{"Date":"2025-06-04","CO1":64.86,"CO2":64.22,"CO3":63.73,"CO4":63.46,"CO5":63.37,"CO6":63.39,"CO7":63.45},{"Date":"2025-06-05","CO1":65.34,"CO2":64.75,"CO3":64.26,"CO4":63.98,"CO5":63.86,"CO6":63.87,"CO7":63.91},{"Date":"2025-06-06","CO1":66.47,"CO2":65.73,"CO3":65.15,"CO4":64.79,"CO5":64.62,"CO6":64.58,"CO7":64.61},{"Date":"2025-06-09","CO1":67.04,"CO2":66.27,"CO3":65.65,"CO4":65.24,"CO5":65.02,"CO6":64.97,"CO7":64.98},{"Date":"2025-06-10","CO1":66.87,"CO2":66.13,"CO3":65.5,"CO4":65.08,"CO5":64.86,"CO6":64.8,"CO7":64.81},{"Date":"2025-06-11","CO1":69.77,"CO2":68.92,"CO3":68.13,"CO4":67.55,"CO5":67.17,"CO6":66.98,"CO7":66.87},{"Date":"2025-06-12","CO1":69.36,"CO2":68.44,"CO3":67.67,"CO4":67.13,"CO5":66.8,"CO6":66.63,"CO7":66.55},{"Date":"2025-06-13","CO1":74.23,"CO2":72.8,"CO3":71.69,"CO4":70.85,"CO5":70.22,"CO6":69.77,"CO7":69.41},{"Date":"2025-06-16","CO1":73.23,"CO2":71.99,"CO3":71.04,"CO4":70.39,"CO5":69.93,"CO6":69.63,"CO7":69.4},{"Date":"2025-06-17","CO1":76.45,"CO2":74.9,"CO3":73.68,"CO4":72.82,"CO5":72.19,"CO6":71.74,"CO7":71.38},{"Date":"2025-06-18","CO1":76.7,"CO2":75.14,"CO3":73.9,"CO4":73.01,"CO5":72.34,"CO6":71.86,"CO7":71.46},{"Date":"2025-06-19","CO1":78.85,"CO2":77.08,"CO3":75.58,"CO4":74.48,"CO5":73.67,"CO6":73.1,"CO7":72.63},{"Date":"2025-06-20","CO1":77.01,"CO2":75.48,"CO3":74.03,"CO4":72.98,"CO5":72.27,"CO6":71.8,"CO7":71.44},{"Date":"2025-06-23","CO1":71.48,"CO2":70.52,"CO3":69.6,"CO4":69.03,"CO5":68.69,"CO6":68.5,"CO7":68.37},{"Date":"2025-06-24","CO1":67.14,"CO2":66.17,"CO3":65.36,"CO4":64.93,"CO5":64.75,"CO6":64.74,"CO7":64.77},{"Date":"2025-06-25","CO1":67.68,"CO2":66.43,"CO3":65.48,"CO4":64.9,"CO5":64.58,"CO6":64.47,"CO7":64.44},{"Date":"2025-06-26","CO1":67.73,"CO2":66.69,"CO3":65.81,"CO4":65.25,"CO5":64.95,"CO6":64.86,"CO7":64.85},{"Date":"2025-06-27","CO1":67.77,"CO2":66.8,"CO3":65.92,"CO4":65.32,"CO5":64.98,"CO6":64.85,"CO7":64.8},{"Date":"2025-06-30","CO1":67.61,"CO2":66.74,"CO3":65.86,"CO4":65.25,"CO5":64.91,"CO6":64.77,"CO7":64.72},{"Date":"2025-07-01","CO1":67.11,"CO2":66.23,"CO3":65.61,"CO4":65.24,"CO5":65.07,"CO6":64.98,"CO7":64.94},{"Date":"2025-07-02","CO1":69.11,"CO2":67.94,"CO3":67.09,"CO4":66.55,"CO5":66.26,"CO6":66.08,"CO7":65.96},{"Date":"2025-07-03","CO1":68.8,"CO2":67.68,"CO3":66.88,"CO4":66.35,"CO5":66.08,"CO6":65.92,"CO7":65.82},{"Date":"2025-07-04","CO1":68.3,"CO2":67.22,"CO3":66.46,"CO4":65.99,"CO5":65.75,"CO6":65.62,"CO7":65.54},{"Date":"2025-07-07","CO1":69.58,"CO2":68.43,"CO3":67.58,"CO4":67.0,"CO5":66.67,"CO6":66.47,"CO7":66.34},{"Date":"2025-07-08","CO1":70.15,"CO2":68.98,"CO3":68.13,"CO4":67.56,"CO5":67.23,"CO6":67.04,"CO7":66.91},{"Date":"2025-07-09","CO1":70.19,"CO2":68.97,"CO3":68.05,"CO4":67.41,"CO5":67.05,"CO6":66.84,"CO7":66.71},{"Date":"2025-07-10","CO1":68.64,"CO2":67.56,"CO3":66.77,"CO4":66.26,"CO5":66.0,"CO6":65.87,"CO7":65.8},{"Date":"2025-07-11","CO1":70.36,"CO2":69.16,"CO3":68.29,"CO4":67.72,"CO5":67.4,"CO6":67.21,"CO7":67.09},{"Date":"2025-07-14","CO1":69.21,"CO2":68.23,"CO3":67.54,"CO4":67.1,"CO5":66.85,"CO6":66.72,"CO7":66.64},{"Date":"2025-07-15","CO1":68.71,"CO2":67.78,"CO3":67.12,"CO4":66.7,"CO5":66.46,"CO6":66.33,"CO7":66.25},{"Date":"2025-07-16","CO1":68.52,"CO2":67.55,"CO3":66.9,"CO4":66.49,"CO5":66.25,"CO6":66.11,"CO7":66.03},{"Date":"2025-07-17","CO1":69.52,"CO2":68.52,"CO3":67.84,"CO4":67.36,"CO5":67.07,"CO6":66.88,"CO7":66.76},{"Date":"2025-07-18","CO1":69.28,"CO2":68.4,"CO3":67.77,"CO4":67.33,"CO5":67.05,"CO6":66.87,"CO7":66.75},{"Date":"2025-07-21","CO1":69.21,"CO2":68.38,"CO3":67.82,"CO4":67.41,"CO5":67.16,"CO6":66.99,"CO7":66.88},{"Date":"2025-07-22","CO1":68.59,"CO2":67.77,"CO3":67.25,"CO4":66.88,"CO5":66.66,"CO6":66.52,"CO7":66.43},{"Date":"2025-07-23","CO1":68.51,"CO2":67.83,"CO3":67.35,"CO4":67.01,"CO5":66.81,"CO6":66.68,"CO7":66.59},{"Date":"2025-07-24","CO1":69.18,"CO2":68.36,"CO3":67.77,"CO4":67.37,"CO5":67.13,"CO6":66.98,"CO7":66.89},{"Date":"2025-07-25","CO1":68.44,"CO2":67.66,"CO3":67.05,"CO4":66.65,"CO5":66.43,"CO6":66.3,"CO7":66.23},{"Date":"2025-07-28","CO1":70.04,"CO2":69.32,"CO3":68.69,"CO4":68.22,"CO5":67.94,"CO6":67.75,"CO7":67.62},{"Date":"2025-07-29","CO1":72.51,"CO2":71.68,"CO3":70.95,"CO4":70.38,"CO5":69.98,"CO6":69.69,"CO7":69.45},{"Date":"2025-07-30","CO1":73.24,"CO2":72.47,"CO3":71.61,"CO4":70.91,"CO5":70.43,"CO6":70.09,"CO7":69.83},{"Date":"2025-07-31","CO1":72.53,"CO2":71.7,"CO3":70.8,"CO4":70.09,"CO5":69.62,"CO6":69.29,"CO7":69.05},{"Date":"2025-08-01","CO1":69.67,"CO2":68.76,"CO3":68.04,"CO4":67.58,"CO5":67.29,"CO6":67.09,"CO7":66.93},{"Date":"2025-08-04","CO1":68.76,"CO2":68.01,"CO3":67.45,"CO4":67.1,"CO5":66.87,"CO6":66.73,"CO7":66.61},{"Date":"2025-08-05","CO1":67.64,"CO2":66.97,"CO3":66.49,"CO4":66.19,"CO5":66.01,"CO6":65.9,"CO7":65.81},{"Date":"2025-08-06","CO1":66.89,"CO2":66.27,"CO3":65.82,"CO4":65.55,"CO5":65.39,"CO6":65.3,"CO7":65.23},{"Date":"2025-08-07","CO1":66.43,"CO2":65.9,"CO3":65.53,"CO4":65.32,"CO5":65.21,"CO6":65.15,"CO7":65.1},{"Date":"2025-08-08","CO1":66.59,"CO2":65.92,"CO3":65.49,"CO4":65.27,"CO5":65.15,"CO6":65.08,"CO7":65.02},{"Date":"2025-08-11","CO1":66.63,"CO2":66.06,"CO3":65.69,"CO4":65.5,"CO5":65.4,"CO6":65.34,"CO7":65.29},{"Date":"2025-08-12","CO1":66.12,"CO2":65.62,"CO3":65.28,"CO4":65.11,"CO5":65.03,"CO6":64.99,"CO7":64.96},{"Date":"2025-08-13","CO1":65.63,"CO2":65.15,"CO3":64.82,"CO4":64.66,"CO5":64.6,"CO6":64.58,"CO7":64.58},{"Date":"2025-08-14","CO1":66.84,"CO2":66.16,"CO3":65.69,"CO4":65.43,"CO5":65.29,"CO6":65.21,"CO7":65.17},{"Date":"2025-08-15","CO1":65.85,"CO2":65.3,"CO3":64.91,"CO4":64.7,"CO5":64.6,"CO6":64.56,"CO7":64.55},{"Date":"2025-08-18","CO1":66.6,"CO2":66.01,"CO3":65.57,"CO4":65.33,"CO5":65.19,"CO6":65.13,"CO7":65.1},{"Date":"2025-08-19","CO1":65.79,"CO2":65.3,"CO3":64.91,"CO4":64.71,"CO5":64.62,"CO6":64.59,"CO7":64.58},{"Date":"2025-08-20","CO1":66.84,"CO2":66.31,"CO3":65.89,"CO4":65.67,"CO5":65.55,"CO6":65.5,"CO7":65.47},{"Date":"2025-08-21","CO1":67.67,"CO2":67.12,"CO3":66.66,"CO4":66.39,"CO5":66.25,"CO6":66.19,"CO7":66.15},{"Date":"2025-08-22","CO1":67.73,"CO2":67.22,"CO3":66.77,"CO4":66.5,"CO5":66.35,"CO6":66.29,"CO7":66.24},{"Date":"2025-08-25","CO1":68.8,"CO2":68.22,"CO3":67.74,"CO4":67.45,"CO5":67.27,"CO6":67.18,"CO7":67.1},{"Date":"2025-08-26","CO1":67.22,"CO2":66.7,"CO3":66.27,"CO4":66.01,"CO5":65.86,"CO6":65.8,"CO7":65.76},{"Date":"2025-08-27","CO1":68.05,"CO2":67.44,"CO3":66.89,"CO4":66.54,"CO5":66.32,"CO6":66.22,"CO7":66.15},{"Date":"2025-08-28","CO1":68.62,"CO2":67.98,"CO3":67.42,"CO4":67.06,"CO5":66.84,"CO6":66.74,"CO7":66.67},{"Date":"2025-08-29","CO1":68.12,"CO2":67.48,"CO3":66.89,"CO4":66.5,"CO5":66.27,"CO6":66.16,"CO7":66.09},{"Date":"2025-09-01","CO1":68.15,"CO2":67.52,"CO3":67.08,"CO4":66.82,"CO5":66.68,"CO6":66.6,"CO7":66.54},{"Date":"2025-09-02","CO1":69.14,"CO2":68.59,"CO3":68.17,"CO4":67.9,"CO5":67.74,"CO6":67.65,"CO7":67.58},{"Date":"2025-09-03","CO1":67.6,"CO2":67.16,"CO3":66.83,"CO4":66.62,"CO5":66.51,"CO6":66.46,"CO7":66.43},{"Date":"2025-09-04","CO1":66.99,"CO2":66.53,"CO3":66.2,"CO4":65.97,"CO5":65.85,"CO6":65.79,"CO7":65.75},{"Date":"2025-09-05","CO1":65.5,"CO2":65.11,"CO3":64.83,"CO4":64.65,"CO5":64.57,"CO6":64.56,"CO7":64.56},{"Date":"2025-09-08","CO1":66.02,"CO2":65.67,"CO3":65.39,"CO4":65.21,"CO5":65.14,"CO6":65.13,"CO7":65.13},{"Date":"2025-09-09","CO1":66.39,"CO2":66.11,"CO3":65.86,"CO4":65.68,"CO5":65.59,"CO6":65.55,"CO7":65.53},{"Date":"2025-09-10","CO1":67.49,"CO2":67.16,"CO3":66.87,"CO4":66.66,"CO5":66.55,"CO6":66.47,"CO7":66.42},{"Date":"2025-09-11","CO1":66.37,"CO2":66.01,"CO3":65.73,"CO4":65.54,"CO5":65.45,"CO6":65.4,"CO7":65.37},{"Date":"2025-09-12","CO1":66.99,"CO2":66.54,"CO3":66.17,"CO4":65.95,"CO5":65.84,"CO6":65.78,"CO7":65.74},{"Date":"2025-09-15","CO1":67.44,"CO2":67.04,"CO3":66.69,"CO4":66.46,"CO5":66.34,"CO6":66.27,"CO7":66.22},{"Date":"2025-09-16","CO1":68.47,"CO2":68.01,"CO3":67.62,"CO4":67.35,"CO5":67.19,"CO6":67.09,"CO7":67.03},{"Date":"2025-09-17","CO1":67.95,"CO2":67.46,"CO3":67.07,"CO4":66.78,"CO5":66.62,"CO6":66.51,"CO7":66.44},{"Date":"2025-09-18","CO1":67.44,"CO2":66.92,"CO3":66.52,"CO4":66.24,"CO5":66.09,"CO6":66.0,"CO7":65.94},{"Date":"2025-09-19","CO1":66.68,"CO2":66.04,"CO3":65.6,"CO4":65.33,"CO5":65.19,"CO6":65.13,"CO7":65.09},{"Date":"2025-09-22","CO1":66.57,"CO2":65.97,"CO3":65.56,"CO4":65.32,"CO5":65.2,"CO6":65.16,"CO7":65.14},{"Date":"2025-09-23","CO1":67.63,"CO2":66.97,"CO3":66.5,"CO4":66.19,"CO5":66.03,"CO6":65.95,"CO7":65.9},{"Date":"2025-09-24","CO1":69.31,"CO2":68.46,"CO3":67.88,"CO4":67.46,"CO5":67.2,"CO6":67.04,"CO7":66.93},{"Date":"2025-09-25","CO1":69.42,"CO2":68.58,"CO3":68.03,"CO4":67.64,"CO5":67.38,"CO6":67.23,"CO7":67.13},{"Date":"2025-09-26","CO1":70.13,"CO2":69.22,"CO3":68.65,"CO4":68.23,"CO5":67.95,"CO6":67.79,"CO7":67.67},{"Date":"2025-09-29","CO1":67.97,"CO2":67.09,"CO3":66.67,"CO4":66.35,"CO5":66.15,"CO6":66.05,"CO7":65.99},{"Date":"2025-09-30","CO1":67.02,"CO2":66.03,"CO3":65.62,"CO4":65.32,"CO5":65.14,"CO6":65.06,"CO7":65.02},{"Date":"2025-10-01","CO1":65.35,"CO2":65.0,"CO3":64.75,"CO4":64.62,"CO5":64.57,"CO6":64.55,"CO7":64.53},{"Date":"2025-10-02","CO1":64.11,"CO2":63.81,"CO3":63.63,"CO4":63.56,"CO5":63.57,"CO6":63.61,"CO7":63.65},{"Date":"2025-10-03","CO1":64.53,"CO2":64.16,"CO3":63.94,"CO4":63.84,"CO5":63.83,"CO6":63.86,"CO7":63.88},{"Date":"2025-10-06","CO1":65.47,"CO2":65.07,"CO3":64.82,"CO4":64.7,"CO5":64.67,"CO6":64.68,"CO7":64.69},{"Date":"2025-10-07","CO1":65.45,"CO2":64.94,"CO3":64.62,"CO4":64.48,"CO5":64.44,"CO6":64.45,"CO7":64.46},{"Date":"2025-10-08","CO1":66.25,"CO2":65.68,"CO3":65.33,"CO4":65.17,"CO5":65.12,"CO6":65.1,"CO7":65.08},{"Date":"2025-10-09","CO1":65.22,"CO2":64.74,"CO3":64.45,"CO4":64.32,"CO5":64.29,"CO6":64.31,"CO7":64.32},{"Date":"2025-10-10","CO1":62.73,"CO2":62.28,"CO3":62.06,"CO4":61.99,"CO5":62.02,"CO6":62.09,"CO7":62.16},{"Date":"2025-10-13","CO1":63.32,"CO2":62.94,"CO3":62.75,"CO4":62.7,"CO5":62.75,"CO6":62.83,"CO7":62.9},{"Date":"2025-10-14","CO1":62.39,"CO2":62.02,"CO3":61.86,"CO4":61.85,"CO5":61.93,"CO6":62.04,"CO7":62.14},{"Date":"2025-10-15","CO1":61.91,"CO2":61.63,"CO3":61.51,"CO4":61.52,"CO5":61.62,"CO6":61.75,"CO7":61.86},{"Date":"2025-10-16","CO1":61.06,"CO2":60.79,"CO3":60.67,"CO4":60.68,"CO5":60.8,"CO6":60.94,"CO7":61.07},{"Date":"2025-10-17","CO1":61.29,"CO2":61.1,"CO3":61.04,"CO4":61.09,"CO5":61.22,"CO6":61.38,"CO7":61.53},{"Date":"2025-10-20","CO1":61.01,"CO2":60.88,"CO3":60.86,"CO4":60.93,"CO5":61.08,"CO6":61.26,"CO7":61.43},{"Date":"2025-10-21","CO1":61.32,"CO2":61.03,"CO3":60.94,"CO4":60.96,"CO5":61.07,"CO6":61.22,"CO7":61.36},{"Date":"2025-10-22","CO1":62.59,"CO2":62.23,"CO3":62.07,"CO4":62.03,"CO5":62.09,"CO6":62.2,"CO7":62.31},{"Date":"2025-10-23","CO1":65.99,"CO2":65.29,"CO3":64.67,"CO4":64.28,"CO5":64.06,"CO6":63.95,"CO7":63.87},{"Date":"2025-10-24","CO1":65.94,"CO2":65.2,"CO3":64.57,"CO4":64.18,"CO5":63.96,"CO6":63.86,"CO7":63.8},{"Date":"2025-10-27","CO1":65.62,"CO2":64.9,"CO3":64.32,"CO4":63.97,"CO5":63.8,"CO6":63.74,"CO7":63.72},{"Date":"2025-10-28","CO1":64.4,"CO2":63.83,"CO3":63.45,"CO4":63.27,"CO5":63.21,"CO6":63.23,"CO7":63.28},{"Date":"2025-10-29","CO1":64.92,"CO2":64.32,"CO3":63.89,"CO4":63.67,"CO5":63.6,"CO6":63.62,"CO7":63.65},{"Date":"2025-10-30","CO1":65.0,"CO2":64.37,"CO3":63.89,"CO4":63.64,"CO5":63.56,"CO6":63.57,"CO7":63.61},{"Date":"2025-10-31","CO1":65.07,"CO2":64.77,"CO3":64.2,"CO4":63.86,"CO5":63.7,"CO6":63.66,"CO7":63.67},{"Date":"2025-11-03","CO1":64.89,"CO2":64.44,"CO3":64.17,"CO4":64.04,"CO5":64.0,"CO6":63.99,"CO7":63.98},{"Date":"2025-11-04","CO1":64.44,"CO2":64.07,"CO3":63.86,"CO4":63.77,"CO5":63.75,"CO6":63.77,"CO7":63.78},{"Date":"2025-11-05","CO1":63.52,"CO2":63.24,"CO3":63.09,"CO4":63.04,"CO5":63.06,"CO6":63.09,"CO7":63.11},{"Date":"2025-11-06","CO1":63.38,"CO2":63.07,"CO3":62.9,"CO4":62.86,"CO5":62.87,"CO6":62.91,"CO7":62.92},{"Date":"2025-11-07","CO1":63.63,"CO2":63.39,"CO3":63.25,"CO4":63.21,"CO5":63.22,"CO6":63.24,"CO7":63.24},{"Date":"2025-11-10","CO1":64.06,"CO2":63.82,"CO3":63.69,"CO4":63.64,"CO5":63.64,"CO6":63.65,"CO7":63.63},{"Date":"2025-11-11","CO1":65.16,"CO2":64.87,"CO3":64.7,"CO4":64.62,"CO5":64.59,"CO6":64.56,"CO7":64.51},{"Date":"2025-11-12","CO1":62.71,"CO2":62.45,"CO3":62.31,"CO4":62.26,"CO5":62.27,"CO6":62.3,"CO7":62.3},{"Date":"2025-11-13","CO1":63.01,"CO2":62.64,"CO3":62.43,"CO4":62.34,"CO5":62.33,"CO6":62.34,"CO7":62.33},{"Date":"2025-11-14","CO1":64.39,"CO2":63.92,"CO3":63.62,"CO4":63.44,"CO5":63.37,"CO6":63.34,"CO7":63.29},{"Date":"2025-11-17","CO1":64.2,"CO2":63.76,"CO3":63.48,"CO4":63.32,"CO5":63.25,"CO6":63.23,"CO7":63.2},{"Date":"2025-11-18","CO1":64.89,"CO2":64.43,"CO3":64.11,"CO4":63.9,"CO5":63.8,"CO6":63.75,"CO7":63.69},{"Date":"2025-11-19","CO1":63.51,"CO2":63.0,"CO3":62.65,"CO4":62.45,"CO5":62.36,"CO6":62.33,"CO7":62.28},{"Date":"2025-11-20","CO1":63.38,"CO2":62.8,"CO3":62.41,"CO4":62.18,"CO5":62.09,"CO6":62.07,"CO7":62.04},{"Date":"2025-11-21","CO1":62.56,"CO2":61.94,"CO3":61.6,"CO4":61.42,"CO5":61.37,"CO6":61.38,"CO7":61.38},{"Date":"2025-11-24","CO1":63.37,"CO2":62.72,"CO3":62.36,"CO4":62.16,"CO5":62.09,"CO6":62.09,"CO7":62.08},{"Date":"2025-11-25","CO1":62.48,"CO2":61.8,"CO3":61.48,"CO4":61.34,"CO5":61.32,"CO6":61.37,"CO7":61.41},{"Date":"2025-11-26","CO1":63.13,"CO2":62.54,"CO3":62.17,"CO4":61.98,"CO5":61.93,"CO6":61.95,"CO7":61.97},{"Date":"2025-11-27","CO1":63.34,"CO2":62.87,"CO3":62.49,"CO4":62.28,"CO5":62.22,"CO6":62.24,"CO7":62.25},{"Date":"2025-11-28","CO1":63.2,"CO2":62.38,"CO3":61.97,"CO4":61.73,"CO5":61.65,"CO6":61.65,"CO7":61.64},{"Date":"2025-12-01","CO1":63.17,"CO2":62.78,"CO3":62.54,"CO4":62.45,"CO5":62.44,"CO6":62.43,"CO7":62.41},{"Date":"2025-12-02","CO1":62.45,"CO2":62.05,"CO3":61.82,"CO4":61.73,"CO5":61.72,"CO6":61.72,"CO7":61.7},{"Date":"2025-12-03","CO1":62.67,"CO2":62.28,"CO3":62.06,"CO4":61.97,"CO5":61.94,"CO6":61.92,"CO7":61.89},{"Date":"2025-12-04","CO1":63.26,"CO2":62.86,"CO3":62.61,"CO4":62.48,"CO5":62.42,"CO6":62.37,"CO7":62.31},{"Date":"2025-12-05","CO1":63.75,"CO2":63.39,"CO3":63.14,"CO4":63.0,"CO5":62.92,"CO6":62.86,"CO7":62.78},{"Date":"2025-12-08","CO1":62.49,"CO2":62.15,"CO3":61.93,"CO4":61.82,"CO5":61.77,"CO6":61.74,"CO7":61.69},{"Date":"2025-12-09","CO1":61.94,"CO2":61.65,"CO3":61.47,"CO4":61.39,"CO5":61.38,"CO6":61.38,"CO7":61.36},{"Date":"2025-12-10","CO1":62.21,"CO2":61.87,"CO3":61.65,"CO4":61.56,"CO5":61.55,"CO6":61.56,"CO7":61.54},{"Date":"2025-12-11","CO1":61.28,"CO2":61.06,"CO3":60.9,"CO4":60.85,"CO5":60.87,"CO6":60.9,"CO7":60.9},{"Date":"2025-12-12","CO1":61.12,"CO2":60.84,"CO3":60.65,"CO4":60.57,"CO5":60.57,"CO6":60.59,"CO7":60.6},{"Date":"2025-12-15","CO1":60.56,"CO2":60.3,"CO3":60.17,"CO4":60.16,"CO5":60.22,"CO6":60.29,"CO7":60.35},{"Date":"2025-12-16","CO1":58.92,"CO2":58.67,"CO3":58.57,"CO4":58.59,"CO5":58.68,"CO6":58.79,"CO7":58.88},{"Date":"2025-12-17","CO1":59.68,"CO2":59.4,"CO3":59.25,"CO4":59.24,"CO5":59.29,"CO6":59.36,"CO7":59.41},{"Date":"2025-12-18","CO1":59.82,"CO2":59.5,"CO3":59.36,"CO4":59.33,"CO5":59.35,"CO6":59.4,"CO7":59.43},{"Date":"2025-12-19","CO1":60.47,"CO2":60.05,"CO3":59.83,"CO4":59.75,"CO5":59.74,"CO6":59.76,"CO7":59.77},{"Date":"2025-12-22","CO1":62.07,"CO2":61.58,"CO3":61.29,"CO4":61.14,"CO5":61.06,"CO6":61.03,"CO7":60.99},{"Date":"2025-12-23","CO1":62.38,"CO2":61.87,"CO3":61.54,"CO4":61.38,"CO5":61.3,"CO6":61.27,"CO7":61.23},{"Date":"2025-12-24","CO1":62.24,"CO2":61.8,"CO3":61.5,"CO4":61.37,"CO5":61.32,"CO6":61.3,"CO7":61.28},{"Date":"2025-12-26","CO1":60.64,"CO2":60.24,"CO3":59.97,"CO4":59.85,"CO5":59.83,"CO6":59.85,"CO7":59.86},{"Date":"2025-12-29","CO1":61.94,"CO2":61.49,"CO3":61.15,"CO4":60.98,"CO5":60.92,"CO6":60.89,"CO7":60.87},{"Date":"2025-12-30","CO1":61.92,"CO2":61.33,"CO3":61.03,"CO4":60.87,"CO5":60.81,"CO6":60.77,"CO7":60.74},{"Date":"2025-12-31","CO1":60.85,"CO2":60.49,"CO3":60.32,"CO4":60.25,"CO5":60.22,"CO6":60.19,"CO7":60.17},{"Date":"2026-01-02","CO1":60.75,"CO2":60.43,"CO3":60.28,"CO4":60.24,"CO5":60.24,"CO6":60.24,"CO7":60.24},{"Date":"2026-01-05","CO1":61.76,"CO2":61.37,"CO3":61.16,"CO4":61.05,"CO5":60.98,"CO6":60.91,"CO7":60.85},{"Date":"2026-01-06","CO1":60.7,"CO2":60.31,"CO3":60.1,"CO4":60.0,"CO5":59.95,"CO6":59.92,"CO7":59.89},{"Date":"2026-01-07","CO1":59.96,"CO2":59.58,"CO3":59.4,"CO4":59.34,"CO5":59.31,"CO6":59.29,"CO7":59.27},{"Date":"2026-01-08","CO1":61.99,"CO2":61.49,"CO3":61.22,"CO4":61.08,"CO5":61.01,"CO6":60.95,"CO7":60.89},{"Date":"2026-01-09","CO1":63.34,"CO2":62.79,"CO3":62.47,"CO4":62.29,"CO5":62.17,"CO6":62.05,"CO7":61.94},{"Date":"2026-01-12","CO1":63.87,"CO2":63.22,"CO3":62.85,"CO4":62.64,"CO5":62.5,"CO6":62.37,"CO7":62.25},{"Date":"2026-01-13","CO1":65.47,"CO2":64.75,"CO3":64.29,"CO4":63.99,"CO5":63.77,"CO6":63.58,"CO7":63.41},{"Date":"2026-01-14","CO1":66.52,"CO2":65.83,"CO3":65.36,"CO4":65.03,"CO5":64.76,"CO6":64.53,"CO7":64.32},{"Date":"2026-01-15","CO1":63.76,"CO2":63.08,"CO3":62.7,"CO4":62.47,"CO5":62.3,"CO6":62.17,"CO7":62.05},{"Date":"2026-01-16","CO1":64.13,"CO2":63.46,"CO3":63.05,"CO4":62.8,"CO5":62.6,"CO6":62.44,"CO7":62.31},{"Date":"2026-01-19","CO1":63.94,"CO2":63.22,"CO3":62.81,"CO4":62.54,"CO5":62.34,"CO6":62.18,"CO7":62.05},{"Date":"2026-01-20","CO1":64.92,"CO2":64.19,"CO3":63.76,"CO4":63.48,"CO5":63.27,"CO6":63.1,"CO7":62.96},{"Date":"2026-01-21","CO1":65.24,"CO2":64.53,"CO3":64.13,"CO4":63.88,"CO5":63.69,"CO6":63.54,"CO7":63.41},{"Date":"2026-01-22","CO1":64.06,"CO2":63.34,"CO3":62.97,"CO4":62.76,"CO5":62.61,"CO6":62.5,"CO7":62.41},{"Date":"2026-01-23","CO1":65.88,"CO2":65.07,"CO3":64.56,"CO4":64.24,"CO5":64.0,"CO6":63.81,"CO7":63.65},{"Date":"2026-01-26","CO1":65.59,"CO2":64.77,"CO3":64.31,"CO4":64.04,"CO5":63.85,"CO6":63.69,"CO7":63.56},{"Date":"2026-01-27","CO1":67.57,"CO2":66.59,"CO3":65.96,"CO4":65.55,"CO5":65.24,"CO6":64.99,"CO7":64.77},{"Date":"2026-01-28","CO1":68.4,"CO2":67.37,"CO3":66.74,"CO4":66.28,"CO5":65.91,"CO6":65.6,"CO7":65.33},{"Date":"2026-01-29","CO1":70.71,"CO2":69.59,"CO3":68.88,"CO4":68.3,"CO5":67.8,"CO6":67.37,"CO7":66.98},{"Date":"2026-01-30","CO1":70.69,"CO2":69.32,"CO3":68.61,"CO4":68.04,"CO5":67.58,"CO6":67.18,"CO7":66.82},{"Date":"2026-02-02","CO1":66.3,"CO2":65.57,"CO3":64.99,"CO4":64.55,"CO5":64.17,"CO6":63.87,"CO7":63.62},{"Date":"2026-02-03","CO1":67.33,"CO2":66.68,"CO3":66.16,"CO4":65.74,"CO5":65.37,"CO6":65.07,"CO7":64.81},{"Date":"2026-02-04","CO1":69.46,"CO2":68.75,"CO3":68.15,"CO4":67.65,"CO5":67.22,"CO6":66.85,"CO7":66.53},{"Date":"2026-02-05","CO1":67.55,"CO2":66.98,"CO3":66.49,"CO4":66.08,"CO5":65.72,"CO6":65.41,"CO7":65.15},{"Date":"2026-02-06","CO1":68.05,"CO2":67.47,"CO3":67.0,"CO4":66.6,"CO5":66.26,"CO6":65.96,"CO7":65.69},{"Date":"2026-02-09","CO1":69.04,"CO2":68.42,"CO3":67.93,"CO4":67.52,"CO5":67.17,"CO6":66.85,"CO7":66.56},{"Date":"2026-02-10","CO1":68.8,"CO2":68.11,"CO3":67.61,"CO4":67.21,"CO5":66.88,"CO6":66.58,"CO7":66.3},{"Date":"2026-02-11","CO1":69.4,"CO2":68.75,"CO3":68.25,"CO4":67.84,"CO5":67.48,"CO6":67.14,"CO7":66.81},{"Date":"2026-02-12","CO1":67.52,"CO2":66.91,"CO3":66.46,"CO4":66.08,"CO5":65.75,"CO6":65.44,"CO7":65.17},{"Date":"2026-02-13","CO1":67.75,"CO2":67.09,"CO3":66.6,"CO4":66.2,"CO5":65.82,"CO6":65.48,"CO7":65.17},{"Date":"2026-02-16","CO1":68.65,"CO2":67.97,"CO3":67.45,"CO4":67.01,"CO5":66.61,"CO6":66.24,"CO7":65.92},{"Date":"2026-02-17","CO1":67.42,"CO2":66.87,"CO3":66.42,"CO4":66.02,"CO5":65.64,"CO6":65.3,"CO7":65.0},{"Date":"2026-02-18","CO1":70.35,"CO2":69.77,"CO3":69.21,"CO4":68.69,"CO5":68.19,"CO6":67.71,"CO7":67.26},{"Date":"2026-02-19","CO1":71.66,"CO2":71.27,"CO3":70.68,"CO4":70.04,"CO5":69.41,"CO6":68.83,"CO7":68.3},{"Date":"2026-02-20","CO1":71.76,"CO2":71.3,"CO3":70.66,"CO4":70.01,"CO5":69.39,"CO6":68.81,"CO7":68.3},{"Date":"2026-02-23","CO1":71.49,"CO2":71.11,"CO3":70.54,"CO4":69.94,"CO5":69.36,"CO6":68.82,"CO7":68.33},{"Date":"2026-02-24","CO1":70.77,"CO2":70.58,"CO3":70.16,"CO4":69.66,"CO5":69.14,"CO6":68.65,"CO7":68.21},{"Date":"2026-02-25","CO1":70.85,"CO2":70.69,"CO3":70.25,"CO4":69.76,"CO5":69.25,"CO6":68.75,"CO7":68.3},{"Date":"2026-02-26","CO1":70.75,"CO2":70.84,"CO3":70.42,"CO4":69.86,"CO5":69.26,"CO6":68.69,"CO7":68.19},{"Date":"2026-02-27","CO1":72.48,"CO2":72.87,"CO3":72.29,"CO4":71.61,"CO5":70.88,"CO6":70.2,"CO7":69.61},{"Date":"2026-03-02","CO1":77.74,"CO2":76.16,"CO3":74.81,"CO4":73.58,"CO5":72.48,"CO6":71.52,"CO7":70.71},{"Date":"2026-03-03","CO1":81.4,"CO2":78.38,"CO3":76.28,"CO4":74.67,"CO5":73.37,"CO6":72.25,"CO7":71.3},{"Date":"2026-03-04","CO1":81.4,"CO2":78.01,"CO3":75.93,"CO4":74.39,"CO5":73.2,"CO6":72.2,"CO7":71.37},{"Date":"2026-03-05","CO1":85.41,"CO2":81.04,"CO3":77.92,"CO4":75.96,"CO5":74.66,"CO6":73.59,"CO7":72.7},{"Date":"2026-03-06","CO1":92.69,"CO2":87.2,"CO3":82.88,"CO4":79.86,"CO5":77.82,"CO6":76.27,"CO7":75.11},{"Date":"2026-03-09","CO1":98.96,"CO2":93.72,"CO3":88.95,"CO4":85.23,"CO5":82.4,"CO6":80.15,"CO7":78.41},{"Date":"2026-03-10","CO1":87.8,"CO2":85.27,"CO3":82.6,"CO4":80.29,"CO5":78.44,"CO6":76.91,"CO7":75.69},{"Date":"2026-03-11","CO1":91.98,"CO2":89.35,"CO3":86.71,"CO4":84.32,"CO5":82.28,"CO6":80.51,"CO7":79.03},{"Date":"2026-03-12","CO1":100.46,"CO2":96.63,"CO3":92.88,"CO4":89.55,"CO5":86.8,"CO6":84.42,"CO7":82.41},{"Date":"2026-03-13","CO1":103.14,"CO2":98.91,"CO3":94.67,"CO4":91.03,"CO5":88.11,"CO6":85.66,"CO7":83.64},{"Date":"2026-03-16","CO1":100.21,"CO2":96.04,"CO3":91.76,"CO4":88.22,"CO5":85.52,"CO6":83.4,"CO7":81.75},{"Date":"2026-03-17","CO1":103.42,"CO2":99.39,"CO3":95.02,"CO4":91.21,"CO5":88.21,"CO6":85.79,"CO7":83.95},{"Date":"2026-03-18","CO1":107.38,"CO2":102.92,"CO3":98.16,"CO4":94.01,"CO5":90.76,"CO6":88.19,"CO7":86.26},{"Date":"2026-03-19","CO1":108.65,"CO2":103.78,"CO3":98.46,"CO4":94.05,"CO5":90.89,"CO6":88.39,"CO7":86.57},{"Date":"2026-03-20","CO1":112.19,"CO2":106.41,"CO3":100.33,"CO4":95.37,"CO5":91.86,"CO6":89.17,"CO7":87.29},{"Date":"2026-03-23","CO1":99.94,"CO2":95.92,"CO3":91.68,"CO4":87.96,"CO5":85.31,"CO6":83.22,"CO7":81.71},{"Date":"2026-03-24","CO1":104.49,"CO2":100.23,"CO3":95.6,"CO4":91.56,"CO5":88.68,"CO6":86.45,"CO7":84.82},{"Date":"2026-03-25","CO1":102.22,"CO2":97.26,"CO3":92.93,"CO4":89.39,"CO5":86.92,"CO6":84.98,"CO7":83.5},{"Date":"2026-03-26","CO1":108.01,"CO2":101.89,"CO3":96.68,"CO4":92.69,"CO5":89.82,"CO6":87.58,"CO7":85.84},{"Date":"2026-03-27","CO1":112.57,"CO2":105.32,"CO3":98.73,"CO4":93.82,"CO5":90.35,"CO6":87.77,"CO7":85.91},{"Date":"2026-03-30","CO1":112.78,"CO2":107.39,"CO3":100.29,"CO4":94.77,"CO5":90.74,"CO6":87.77,"CO7":85.68},{"Date":"2026-03-31","CO1":118.35,"CO2":103.97,"CO3":96.17,"CO4":90.17,"CO5":85.91,"CO6":82.95,"CO7":81.01},{"Date":"2026-04-01","CO1":101.16,"CO2":93.5,"CO3":87.82,"CO4":83.96,"CO5":81.25,"CO6":79.46,"CO7":78.15},{"Date":"2026-04-02","CO1":109.03,"CO2":99.44,"CO3":91.43,"CO4":85.95,"CO5":82.54,"CO6":80.47,"CO7":79.02},{"Date":"2026-04-06","CO1":111.02,"CO2":101.04,"CO3":92.88,"CO4":87.29,"CO5":83.85,"CO6":81.84,"CO7":80.46}];
 
-/* ─────────────────────────────────────────────────────────────
-   CONSTANTS & STATE
-───────────────────────────────────────────────────────────── */
-const CONTRACTS  = ['CO1','CO2','CO3','CO4','CO5','CO6','CO7'];
-const C_LABELS   = {'CO1':'1er','CO2':'2do','CO3':'3er','CO4':'4to','CO5':'5to','CO6':'6to','CO7':'7mo'};
-const ALL_DATES  = RAW.map(r => r.Date);
-const FIRST_DATE = ALL_DATES[0];
-const LAST_DATE  = ALL_DATES[ALL_DATES.length - 1];
-const TODAY_ROW  = RAW[RAW.length - 1];
+const CONTRACTS=['CO1','CO2','CO3','CO4','CO5','CO6','CO7'];
+const C_LABELS={'CO1':'1er','CO2':'2do','CO3':'3er','CO4':'4to','CO5':'5to','CO6':'6to','CO7':'7mo'};
+const ALL_DATES=RAW.map(r=>r.Date);
+const FIRST_DATE=ALL_DATES[0],LAST_DATE=ALL_DATES[ALL_DATES.length-1];
+const TODAY_ROW=RAW[RAW.length-1],PREV_ROW=RAW[RAW.length-2];
+let spreadMode='pct',matrixMode='pct',selBase='CO1',selLong='CO2';
+let dateFrom=FIRST_DATE,dateTo=LAST_DATE;
+let mx2Row=null,spreadChart=null,curveChart=null;
 
-let spreadMode  = 'pct';
-let matrixMode  = 'pct';
-let selBase     = 'CO1';
-let selLong     = 'CO2';
-let dateFrom    = FIRST_DATE;
-let dateTo      = LAST_DATE;
-let activePill  = 'all';
-let spreadChart = null;
-let curveChart  = null;
+function calcSpread(l,b,m){return m==='pct'?(l/b-1)*100:l-b}
+function fmtSpread(v,m){return m==='pct'?(v>=0?'+':'')+v.toFixed(2)+'%':(v>=0?'+$':'-$')+Math.abs(v).toFixed(2)}
+function colorCls(v){return v<-0.001?'neg':v>0.001?'pos':'neutral'}
+function subtractPeriod(base,p){const d=new Date(base+'T12:00:00Z');if(p==='1m')d.setUTCMonth(d.getUTCMonth()-1);else if(p==='2m')d.setUTCMonth(d.getUTCMonth()-2);else if(p==='3m')d.setUTCMonth(d.getUTCMonth()-3);else if(p==='6m')d.setUTCMonth(d.getUTCMonth()-6);else if(p==='1y')d.setUTCFullYear(d.getUTCFullYear()-1);return d.toISOString().slice(0,10)}
+function findRowOnOrBefore(t){const h=ALL_DATES.filter(d=>d<=t);if(!h.length)return RAW[0];return RAW.find(r=>r.Date===h[h.length-1])}
 
-/* ─────────────────────────────────────────────────────────────
-   HELPERS
-───────────────────────────────────────────────────────────── */
-function calcSpread(longV, baseV, mode) {
-  return mode === 'pct' ? (longV / baseV - 1) * 100 : longV - baseV;
-}
+document.getElementById('last-date').textContent=LAST_DATE;
+const fromEl=document.getElementById('date-from'),toEl=document.getElementById('date-to');
+fromEl.min=FIRST_DATE;fromEl.max=LAST_DATE;fromEl.value=FIRST_DATE;
+toEl.min=FIRST_DATE;toEl.max=LAST_DATE;toEl.value=LAST_DATE;
+const mx2DateEl=document.getElementById('mx2-custom-date');
+mx2DateEl.min=FIRST_DATE;mx2DateEl.max=LAST_DATE;
 
-function fmtSpread(v, mode) {
-  return mode === 'pct'
-    ? (v >= 0 ? '+' : '') + v.toFixed(2) + '%'
-    : (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(2);
-}
-
-function colorCls(v) {
-  return v < -0.001 ? 'neg' : v > 0.001 ? 'pos' : 'neutral';
-}
-
-function subtractPeriod(dateStr, period) {
-  const d = new Date(dateStr + 'T12:00:00Z');
-  if (period === '1m') d.setUTCMonth(d.getUTCMonth() - 1);
-  else if (period === '2m') d.setUTCMonth(d.getUTCMonth() - 2);
-  else if (period === '3m') d.setUTCMonth(d.getUTCMonth() - 3);
-  else if (period === '6m') d.setUTCMonth(d.getUTCMonth() - 6);
-  else if (period === '1y') d.setUTCFullYear(d.getUTCFullYear() - 1);
-  return d.toISOString().slice(0, 10);
-}
-
-function findRowOnOrBefore(target) {
-  const hits = ALL_DATES.filter(d => d <= target);
-  if (!hits.length) return RAW[0];
-  return RAW.find(r => r.Date === hits[hits.length - 1]);
-}
-
-const PERIOD_LABELS = { '1m':'1 mes atrás','2m':'2 meses atrás','3m':'3 meses atrás','6m':'6 meses atrás','1y':'1 año atrás' };
-
-/* ─────────────────────────────────────────────────────────────
-   INIT DATE INPUTS
-───────────────────────────────────────────────────────────── */
-document.getElementById('last-date').textContent = LAST_DATE;
-
-(function initDateInputs() {
-  const fromEl = document.getElementById('date-from');
-  const toEl   = document.getElementById('date-to');
-  fromEl.min = FIRST_DATE; fromEl.max = LAST_DATE; fromEl.value = FIRST_DATE;
-  toEl.min   = FIRST_DATE; toEl.max   = LAST_DATE; toEl.value   = LAST_DATE;
-})();
-
-/* ─────────────────────────────────────────────────────────────
-   KPI ROW
-───────────────────────────────────────────────────────────── */
-(function buildKPIs() {
-  const row = document.getElementById('kpi-row');
-  CONTRACTS.forEach(c => {
-    const price = TODAY_ROW[c];
-    const spPct = c === 'CO1' ? null : calcSpread(price, TODAY_ROW['CO1'], 'pct');
-    const div = document.createElement('div');
-    div.className = 'kpi-card';
-    div.innerHTML = `
-      <div class="kpi-label">${c} · ${C_LABELS[c]}</div>
-      <div class="kpi-val">$${price.toFixed(2)}</div>
-      ${spPct !== null
-        ? `<div class="kpi-sp ${colorCls(spPct)}">${fmtSpread(spPct,'pct')} vs CO1</div>`
-        : `<div class="kpi-sp neutral">Contrato base</div>`}
-    `;
-    row.appendChild(div);
+// KPI — VAR% 1D
+(function(){
+  const row=document.getElementById('kpi-row');
+  CONTRACTS.forEach(c=>{
+    const px=TODAY_ROW[c],pp=PREV_ROW[c];
+    const v=pp?(px/pp-1)*100:0;
+    const cls=colorCls(v),arr=v>0?'▲':v<0?'▼':'—';
+    const d=document.createElement('div');d.className='kpi-card';
+    d.innerHTML=`<div class="kpi-label">${c} · ${C_LABELS[c]}</div><div class="kpi-price">$${px.toFixed(2)}</div><div class="kpi-var ${cls}">${arr} ${v>=0?'+':''}${v.toFixed(2)}% <span style="opacity:.5;font-size:9px">1D</span></div>`;
+    row.appendChild(d);
   });
 })();
 
-/* ─────────────────────────────────────────────────────────────
-   DATE RANGE — PILL SHORTCUTS
-───────────────────────────────────────────────────────────── */
-function setPeriodPill(el, period) {
-  activePill = period;
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-
-  if (period === 'all') {
-    dateFrom = FIRST_DATE;
-  } else {
-    dateFrom = subtractPeriod(LAST_DATE, period);
-    // clamp to data start
-    if (dateFrom < FIRST_DATE) dateFrom = FIRST_DATE;
-  }
-  dateTo = LAST_DATE;
-
-  document.getElementById('date-from').value = dateFrom;
-  document.getElementById('date-to').value   = dateTo;
-  renderSpreadChart();
-}
-
-function onDateRangeChange() {
-  dateFrom = document.getElementById('date-from').value || FIRST_DATE;
-  dateTo   = document.getElementById('date-to').value   || LAST_DATE;
-  // Clear active pill — user chose custom range
-  activePill = 'custom';
-  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-  renderSpreadChart();
-}
-
-/* ─────────────────────────────────────────────────────────────
-   SPREAD PAIR SELECTORS
-───────────────────────────────────────────────────────────── */
-function buildSelectors() {
-  const baseEl = document.getElementById('sel-base');
-  const longEl = document.getElementById('sel-long');
-  baseEl.innerHTML = '';
-  CONTRACTS.slice(0, 6).forEach(c => {
-    const o = document.createElement('option');
-    o.value = c; o.textContent = `${c} — ${C_LABELS[c]}`;
-    if (c === selBase) o.selected = true;
-    baseEl.appendChild(o);
-  });
-  longEl.innerHTML = '';
-  const bi = CONTRACTS.indexOf(selBase);
-  CONTRACTS.slice(bi + 1).forEach(c => {
-    const o = document.createElement('option');
-    o.value = c; o.textContent = `${c} — ${C_LABELS[c]}`;
-    if (c === selLong) o.selected = true;
-    longEl.appendChild(o);
-  });
-  if (CONTRACTS.indexOf(selLong) <= bi) {
-    selLong = CONTRACTS[bi + 1];
-    longEl.value = selLong;
-  }
+// Spread selectors
+function buildSelectors(){
+  const b=document.getElementById('sel-base'),l=document.getElementById('sel-long');
+  b.innerHTML='';CONTRACTS.slice(0,6).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=`${c} — ${C_LABELS[c]}`;if(c===selBase)o.selected=true;b.appendChild(o);});
+  l.innerHTML='';const bi=CONTRACTS.indexOf(selBase);CONTRACTS.slice(bi+1).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=`${c} — ${C_LABELS[c]}`;if(c===selLong)o.selected=true;l.appendChild(o);});
+  if(CONTRACTS.indexOf(selLong)<=bi){selLong=CONTRACTS[bi+1];l.value=selLong;}
 }
 buildSelectors();
+document.getElementById('sel-base').addEventListener('change',function(){selBase=this.value;if(CONTRACTS.indexOf(selLong)<=CONTRACTS.indexOf(selBase))selLong=CONTRACTS[CONTRACTS.indexOf(selBase)+1];buildSelectors();renderSpreadChart();highlightCell(selBase,selLong);});
+document.getElementById('sel-long').addEventListener('change',function(){selLong=this.value;renderSpreadChart();highlightCell(selBase,selLong);});
 
-document.getElementById('sel-base').addEventListener('change', function () {
-  selBase = this.value;
-  if (CONTRACTS.indexOf(selLong) <= CONTRACTS.indexOf(selBase))
-    selLong = CONTRACTS[CONTRACTS.indexOf(selBase) + 1];
-  buildSelectors();
-  renderSpreadChart();
-  highlightMatrixCell(selBase, selLong);
-});
-document.getElementById('sel-long').addEventListener('change', function () {
-  selLong = this.value;
-  renderSpreadChart();
-  highlightMatrixCell(selBase, selLong);
-});
+function setPeriodPill(el,p){document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));el.classList.add('active');dateFrom=p==='all'?FIRST_DATE:subtractPeriod(LAST_DATE,p);if(dateFrom<FIRST_DATE)dateFrom=FIRST_DATE;dateTo=LAST_DATE;fromEl.value=dateFrom;toEl.value=dateTo;renderSpreadChart();}
+function onDateRangeChange(){dateFrom=fromEl.value||FIRST_DATE;dateTo=toEl.value||LAST_DATE;document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));renderSpreadChart();}
+function setSpreadMode(m){spreadMode=m;document.getElementById('btn-pct').classList.toggle('active',m==='pct');document.getElementById('btn-usd').classList.toggle('active',m==='usd');renderSpreadChart();}
 
-/* ─────────────────────────────────────────────────────────────
-   SPREAD CHART (LINE + DATE RANGE)
-───────────────────────────────────────────────────────────── */
-function renderSpreadChart() {
-  // Filter data by date range
-  const filtered = RAW.filter(r => r.Date >= dateFrom && r.Date <= dateTo);
-  if (!filtered.length) return;
-
-  const labels = filtered.map(r => r.Date);
-  const series = filtered.map(r => {
-    const b = r[selBase], l = r[selLong];
-    return (b && l) ? parseFloat(calcSpread(l, b, spreadMode).toFixed(4)) : null;
-  });
-
-  // Stats computed over the visible range
-  const valid   = series.filter(v => v !== null);
-  const lastVal = valid[valid.length - 1];
-  const minV    = Math.min(...valid);
-  const maxV    = Math.max(...valid);
-  const avg     = valid.reduce((a, b) => a + b, 0) / valid.length;
-
-  // Stat strip
-  document.getElementById('spread-stats').innerHTML = `
-    <div class="stat-cell">
-      <div class="stat-lbl">Último (${LAST_DATE})</div>
-      <div class="stat-val ${colorCls(lastVal)}">${fmtSpread(lastVal, spreadMode)}</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-lbl">Mínimo del período</div>
-      <div class="stat-val neg">${spreadMode==='pct' ? minV.toFixed(2)+'%' : '$'+minV.toFixed(2)}</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-lbl">Máximo del período</div>
-      <div class="stat-val pos">${spreadMode==='pct' ? maxV.toFixed(2)+'%' : '$'+maxV.toFixed(2)}</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-lbl">Promedio del período</div>
-      <div class="stat-val warn">${spreadMode==='pct' ? avg.toFixed(2)+'%' : '$'+avg.toFixed(2)}</div>
-    </div>
-  `;
-
-  // Title & formula
-  document.getElementById('spread-title').textContent  = `Spread ${selLong} vs ${selBase}`;
-  document.getElementById('spread-formula').textContent =
-    spreadMode === 'pct' ? `${selLong} / ${selBase} − 1` : `${selLong} − ${selBase}`;
-
-  // Zero-line annotation helper: find y midpoint for zero reference
-  const ctx = document.getElementById('spreadChart').getContext('2d');
-  if (spreadChart) spreadChart.destroy();
-  spreadChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: `${selLong} vs ${selBase}`,
-        data: series,
-        borderColor: '#00c8ff',
-        backgroundColor: 'rgba(0,200,255,0.06)',
-        borderWidth: 1.5,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        pointHoverBackgroundColor: '#00c8ff',
-        fill: true,
-        tension: 0.3,
-        spanGaps: false,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      animation: { duration: 200 },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0c1219', borderColor: '#1b2733', borderWidth: 1,
-          titleColor: '#7a9ab0', bodyColor: '#fff',
-          titleFont: { family: 'IBM Plex Mono', size: 11 },
-          bodyFont:  { family: 'IBM Plex Mono', size: 13 },
-          callbacks: {
-            title: items => items[0].label,
-            label: item => {
-              const v = item.raw;
-              if (v === null) return '';
-              return spreadMode === 'pct'
-                ? ` ${selLong}/${selBase}: ${v >= 0 ? '+' : ''}${v.toFixed(3)}%`
-                : ` ${selLong}−${selBase}: ${v >= 0 ? '+$' : '-$'}${Math.abs(v).toFixed(2)}`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: '#3d5570', font: { family: 'IBM Plex Mono', size: 10 },
-            maxTicksLimit: 14, maxRotation: 0,
-          },
-          grid: { color: 'rgba(27,39,51,0.8)' }
-        },
-        y: {
-          ticks: {
-            color: '#3d5570', font: { family: 'IBM Plex Mono', size: 10 },
-            callback: v => spreadMode === 'pct' ? v.toFixed(1)+'%' : '$'+v.toFixed(1)
-          },
-          grid: { color: 'rgba(27,39,51,0.8)' }
-        }
-      }
-    }
-  });
+function renderSpreadChart(){
+  const filtered=RAW.filter(r=>r.Date>=dateFrom&&r.Date<=dateTo);
+  if(!filtered.length)return;
+  const labels=filtered.map(r=>r.Date);
+  const series=filtered.map(r=>{const b=r[selBase],l=r[selLong];return(b&&l)?parseFloat(calcSpread(l,b,spreadMode).toFixed(4)):null;});
+  const valid=series.filter(v=>v!==null);
+  const lastVal=valid[valid.length-1],minV=Math.min(...valid),maxV=Math.max(...valid),avg=valid.reduce((a,b)=>a+b,0)/valid.length;
+  document.getElementById('spread-stats').innerHTML=`
+    <div class="stat-cell"><div class="stat-lbl">Último (${LAST_DATE})</div><div class="stat-val ${colorCls(lastVal)}">${fmtSpread(lastVal,spreadMode)}</div></div>
+    <div class="stat-cell"><div class="stat-lbl">Mínimo período</div><div class="stat-val neg">${spreadMode==='pct'?minV.toFixed(2)+'%':'$'+minV.toFixed(2)}</div></div>
+    <div class="stat-cell"><div class="stat-lbl">Máximo período</div><div class="stat-val pos">${spreadMode==='pct'?maxV.toFixed(2)+'%':'$'+maxV.toFixed(2)}</div></div>
+    <div class="stat-cell"><div class="stat-lbl">Promedio período</div><div class="stat-val warn">${spreadMode==='pct'?avg.toFixed(2)+'%':'$'+avg.toFixed(2)}</div></div>`;
+  document.getElementById('spread-title').textContent=`Spread ${selLong} vs ${selBase}`;
+  document.getElementById('spread-formula').textContent=spreadMode==='pct'?`${selLong} / ${selBase} − 1`:`${selLong} − ${selBase}`;
+  const ctx=document.getElementById('spreadChart').getContext('2d');
+  if(spreadChart)spreadChart.destroy();
+  spreadChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:series,borderColor:'#00c8ff',backgroundColor:'rgba(0,200,255,.06)',borderWidth:1.5,pointRadius:0,pointHoverRadius:6,pointHoverBackgroundColor:'#00c8ff',pointHoverBorderColor:'#fff',pointHoverBorderWidth:2,fill:true,tension:.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#0c1219',borderColor:'#1b2733',borderWidth:1,titleColor:'#7a9ab0',bodyColor:'#fff',titleFont:{family:'IBM Plex Mono',size:11},bodyFont:{family:'IBM Plex Mono',size:12},padding:10,caretSize:5,displayColors:false,callbacks:{title:i=>`📅 ${i[0].label}`,label:i=>{if(i.raw===null)return'';const row=RAW.find(r=>r.Date===i[0].label);const pct=(row&&row[selBase])?((row[selLong]/row[selBase]-1)*100):i.raw;const usd=(row&&row[selBase])?(row[selLong]-row[selBase]):null;const pctStr=`${pct>=0?'+':''}${pct.toFixed(3)}%`;const usdStr=usd!==null?`${usd>=0?'+$':'-$'}${Math.abs(usd).toFixed(2)}`:'';return[` Spread ${selLong}/${selBase}`,` ${pctStr}   ${usdStr}`];}}}},scales:{x:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:10},maxTicksLimit:14,maxRotation:0},grid:{color:'rgba(27,39,51,.8)'}},y:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:10},callback:v=>spreadMode==='pct'?v.toFixed(1)+'%':'$'+v.toFixed(1)},grid:{color:'rgba(27,39,51,.8)'}}}}}); 
 }
-
-function setSpreadMode(m) {
-  spreadMode = m;
-  document.getElementById('btn-pct').classList.toggle('active', m === 'pct');
-  document.getElementById('btn-usd').classList.toggle('active', m === 'usd');
-  renderSpreadChart();
-}
-
 renderSpreadChart();
 
-/* ─────────────────────────────────────────────────────────────
-   CLICKABLE MATRIX
-───────────────────────────────────────────────────────────── */
-function setMatrixMode(m) {
-  matrixMode = m;
-  document.getElementById('mx-btn-pct').classList.toggle('active', m === 'pct');
-  document.getElementById('mx-btn-usd').classList.toggle('active', m === 'usd');
-  buildMatrix();
+// Matrix mode — syncs both
+function setMatrixMode(m){
+  matrixMode=m;
+  ['mx-btn-pct','mx2-btn-pct'].forEach(id=>document.getElementById(id).classList.toggle('active',m==='pct'));
+  ['mx-btn-usd','mx2-btn-usd'].forEach(id=>document.getElementById(id).classList.toggle('active',m==='usd'));
+  buildTodayMatrix();if(mx2Row)buildCompareMatrix(mx2Row);
 }
 
-function highlightMatrixCell(base, long) {
-  document.querySelectorAll('td.clickable').forEach(td => td.classList.remove('selected'));
-  const cell = document.querySelector(`td[data-base="${base}"][data-long="${long}"]`);
-  if (cell) cell.classList.add('selected');
+function highlightCell(base,long){
+  document.querySelectorAll('td.clickable').forEach(td=>td.classList.remove('selected'));
+  document.querySelectorAll(`td[data-base="${base}"][data-long="${long}"]`).forEach(td=>td.classList.add('selected'));
 }
+function onMatrixCellClick(base,long){selBase=base;selLong=long;buildSelectors();renderSpreadChart();highlightCell(base,long);document.getElementById('spreadChart').scrollIntoView({behavior:'smooth',block:'center'});}
 
-function onMatrixCellClick(base, long) {
-  selBase = base; selLong = long;
-  buildSelectors();
-  renderSpreadChart();
-  highlightMatrixCell(base, long);
-  document.getElementById('spreadChart').scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-function buildMatrix() {
-  const table = document.getElementById('matrix-table');
-  let html = '<thead><tr><th>Base ↓ / Largo →</th>';
-  CONTRACTS.forEach(c => { html += `<th>${c}</th>`; });
-  html += '</tr></thead><tbody>';
-  CONTRACTS.forEach(rowC => {
-    html += `<tr><td>${rowC} — ${C_LABELS[rowC]}</td>`;
-    CONTRACTS.forEach(colC => {
-      const ri = CONTRACTS.indexOf(rowC), ci = CONTRACTS.indexOf(colC);
-      if (ri === ci) {
-        html += `<td class="diag">—</td>`;
-      } else if (ci < ri) {
-        html += `<td class="blank">·</td>`;
-      } else {
-        const v   = calcSpread(TODAY_ROW[colC], TODAY_ROW[rowC], matrixMode);
-        const cls = colorCls(v);
-        const display = matrixMode === 'pct'
-          ? `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`
-          : `${v >= 0 ? '+$' : '-$'}${Math.abs(v).toFixed(2)}`;
-        const sel = rowC === selBase && colC === selLong;
-        html += `<td class="clickable ${cls}${sel ? ' selected' : ''}" data-base="${rowC}" data-long="${colC}" onclick="onMatrixCellClick('${rowC}','${colC}')">${display}</td>`;
-      }
+function renderMatrix(tableId,dataRow,clickable){
+  const table=document.getElementById(tableId);
+  let html='<thead><tr><th>↓Base/Largo→</th>';CONTRACTS.forEach(c=>{html+=`<th>${c}</th>`;});html+='</tr></thead><tbody>';
+  CONTRACTS.forEach(rC=>{
+    html+=`<tr><td>${rC}</td>`;
+    CONTRACTS.forEach(cC=>{
+      const ri=CONTRACTS.indexOf(rC),ci=CONTRACTS.indexOf(cC);
+      if(ri===ci){html+=`<td class="diag">—</td>`;return;}
+      if(ci<ri){html+=`<td class="blank">·</td>`;return;}
+      const v=calcSpread(dataRow[cC],dataRow[rC],matrixMode);
+      const cls=colorCls(v);
+      const disp=matrixMode==='pct'?`${v>=0?'+':''}${v.toFixed(2)}%`:`${v>=0?'+$':'-$'}${Math.abs(v).toFixed(2)}`;
+      const sel=rC===selBase&&cC===selLong;
+      if(clickable)html+=`<td class="clickable ${cls}${sel?' selected':''}" data-base="${rC}" data-long="${cC}" onclick="onMatrixCellClick('${rC}','${cC}')">${disp}</td>`;
+      else html+=`<td class="${cls}">${disp}</td>`;
     });
-    html += '</tr>';
+    html+='</tr>';
   });
-  html += '</tbody>';
-  table.innerHTML = html;
+  html+='</tbody>';table.innerHTML=html;
 }
-buildMatrix();
+function buildTodayMatrix(){renderMatrix('matrix-today',TODAY_ROW,true);}
+function buildCompareMatrix(r){renderMatrix('matrix-compare',r,false);}
+buildTodayMatrix();
 
-/* ─────────────────────────────────────────────────────────────
-   FORWARD CURVE — 3 CURVES
-───────────────────────────────────────────────────────────── */
-function buildForwardChart() {
-  const p2 = document.getElementById('curve2-sel').value;
-  const p3 = document.getElementById('curve3-sel').value;
+// MX2 period picker
+function setMx2Period(period,el){
+  document.querySelectorAll('.mx2-period-item').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  const customInput=document.getElementById('mx2-custom-date');
+  customInput.style.display=(period==='custom')?'inline-block':'none';
+  if(period==='custom'){if(!customInput.value)return;mx2Row=findRowOnOrBefore(customInput.value);}
+  else{mx2Row=findRowOnOrBefore(subtractPeriod(LAST_DATE,period));}
+  const dateStr=mx2Row?mx2Row.Date:'—';
+  const labels={'1m':'1 mes atrás','2m':'2 meses atrás','3m':'3 meses atrás','6m':'6 meses atrás','1y':'1 año atrás','custom':'Personalizado'};
+  document.getElementById('mx2-subtitle').textContent=`${labels[period]||period} — ${dateStr}`;
+  document.getElementById('curve2-label').textContent=`${labels[period]||period} (${dateStr})`;
+  if(mx2Row)buildCompareMatrix(mx2Row);
+  buildForwardChart();
+}
+function onMx2CustomDate(){
+  const v=document.getElementById('mx2-custom-date').value;if(!v)return;
+  mx2Row=findRowOnOrBefore(v);
+  const dateStr=mx2Row?mx2Row.Date:'—';
+  document.getElementById('mx2-subtitle').textContent=`Personalizado — ${dateStr}`;
+  document.getElementById('curve2-label').textContent=`Personalizado (${dateStr})`;
+  if(mx2Row)buildCompareMatrix(mx2Row);buildForwardChart();
+}
 
-  const row1 = TODAY_ROW;
-  const row2 = findRowOnOrBefore(subtractPeriod(LAST_DATE, p2));
-  const row3 = findRowOnOrBefore(subtractPeriod(LAST_DATE, p3));
-
-  const mk = (data, color, label, dash = []) => ({
-    label, data,
-    borderColor: color,
-    backgroundColor: color + '11',
-    borderWidth: 2,
-    borderDash: dash,
-    pointBackgroundColor: color,
-    pointRadius: 5,
-    pointHoverRadius: 7,
-    fill: false,
-    tension: 0.3,
-  });
-
-  const ctx = document.getElementById('curveChart').getContext('2d');
-  if (curveChart) curveChart.destroy();
-  curveChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: CONTRACTS,
-      datasets: [
-        mk(CONTRACTS.map(c => row1[c]), '#00c8ff', `Hoy (${row1.Date})`),
-        mk(CONTRACTS.map(c => row2[c]), '#ffd700', `${PERIOD_LABELS[p2]} (${row2.Date})`, [6,3]),
-        mk(CONTRACTS.map(c => row3[c]), '#ff6b35', `${PERIOD_LABELS[p3]} (${row3.Date})`, [3,3]),
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      animation: { duration: 300 },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0c1219', borderColor: '#1b2733', borderWidth: 1,
-          titleColor: '#7a9ab0', bodyColor: '#fff',
-          titleFont: { family: 'IBM Plex Mono', size: 11 },
-          bodyFont:  { family: 'IBM Plex Mono', size: 12 },
-          callbacks: { label: i => ` ${i.dataset.label}: $${i.raw.toFixed(2)}` }
-        }
-      },
-      scales: {
-        x: { ticks: { color:'#3d5570', font:{family:'IBM Plex Mono',size:11} }, grid:{color:'rgba(27,39,51,0.8)'} },
-        y: { ticks: { color:'#3d5570', font:{family:'IBM Plex Mono',size:10}, callback: v => '$'+v.toFixed(0) }, grid:{color:'rgba(27,39,51,0.8)'} }
-      }
-    }
-  });
-
-  document.getElementById('curve-legend').innerHTML = [
-    { color:'#00c8ff', label:`Curva 1 — Hoy (${row1.Date})` },
-    { color:'#ffd700', label:`Curva 2 — ${PERIOD_LABELS[p2]} (${row2.Date})` },
-    { color:'#ff6b35', label:`Curva 3 — ${PERIOD_LABELS[p3]} (${row3.Date})` },
-  ].map(i => `<div class="leg-item"><div class="leg-dot" style="background:${i.color}"></div><span>${i.label}</span></div>`).join('');
+// Forward curve — 2 curves
+function buildForwardChart(){
+  const data1=CONTRACTS.map(c=>TODAY_ROW[c]);
+  const data2=mx2Row?CONTRACTS.map(c=>mx2Row[c]):null;
+  const mk=(data,color,label,dash=[])=>({label,data,borderColor:color,backgroundColor:color+'18',borderWidth:2,borderDash:dash,pointBackgroundColor:color,pointRadius:5,pointHoverRadius:7,fill:false,tension:.3});
+  const datasets=[mk(data1,'#00c8ff',`Hoy (${TODAY_ROW.Date})`)];
+  if(data2)datasets.push(mk(data2,'#ffd700',mx2Row.Date,[6,3]));
+  const ctx=document.getElementById('curveChart').getContext('2d');
+  if(curveChart)curveChart.destroy();
+  curveChart=new Chart(ctx,{type:'line',data:{labels:CONTRACTS,datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},plugins:{legend:{display:false},tooltip:{backgroundColor:'#0c1219',borderColor:'#1b2733',borderWidth:1,titleColor:'#7a9ab0',bodyColor:'#fff',titleFont:{family:'IBM Plex Mono',size:11},bodyFont:{family:'IBM Plex Mono',size:12},callbacks:{label:i=>` ${i.dataset.label}: $${i.raw.toFixed(2)}`}}},scales:{x:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:11}},grid:{color:'rgba(27,39,51,.8)'}},y:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:10},callback:v=>'$'+v.toFixed(0)},grid:{color:'rgba(27,39,51,.8)'}}}}}); 
+  document.getElementById('curve-legend').innerHTML=[{color:'#00c8ff',label:`Curva 1 — Hoy (${TODAY_ROW.Date})`},...(mx2Row?[{color:'#ffd700',label:`Curva 2 — ${mx2Row.Date}`}]:[])].map(i=>`<div class="leg-item"><div class="leg-dot" style="background:${i.color}"></div><span>${i.label}</span></div>`).join('');
 }
 buildForwardChart();
-
-/* ─────────────────────────────────────────────────────────────
-   PRICES TABLE
-───────────────────────────────────────────────────────────── */
-(function buildPxTable() {
-  const tbody = document.getElementById('px-body');
-  CONTRACTS.forEach(c => {
-    const p    = TODAY_ROW[c];
-    const spPct = c === 'CO1' ? null : calcSpread(p, TODAY_ROW['CO1'], 'pct');
-    const spUsd = c === 'CO1' ? null : calcSpread(p, TODAY_ROW['CO1'], 'usd');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${c} — ${C_LABELS[c]}</td>
-      <td style="color:#fff;font-weight:600;font-family:'IBM Plex Mono',monospace">$${p.toFixed(2)}</td>
-      <td class="${spPct !== null ? colorCls(spPct) : 'neutral'}" style="font-family:'IBM Plex Mono',monospace">${spPct !== null ? fmtSpread(spPct,'pct') : '—'}</td>
-      <td class="${spUsd !== null ? colorCls(spUsd) : 'neutral'}" style="font-family:'IBM Plex Mono',monospace">${spUsd !== null ? fmtSpread(spUsd,'usd') : '—'}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-})();
-
-/* ─────────────────────────────────────────────────────────────
-   STRUCTURE TABLE
-───────────────────────────────────────────────────────────── */
-(function buildStructureTable() {
-  const tbody = document.getElementById('structure-body');
-  [['CO1','CO2'],['CO2','CO3'],['CO3','CO4'],['CO4','CO5'],['CO5','CO6'],['CO6','CO7']].forEach(([base, long]) => {
-    const spPct = calcSpread(TODAY_ROW[long], TODAY_ROW[base], 'pct');
-    const spUsd = calcSpread(TODAY_ROW[long], TODAY_ROW[base], 'usd');
-    const struct = spPct < -0.01 ? 'Backwardation' : spPct > 0.01 ? 'Contango' : 'Flat';
-    const structColor = spPct < -0.01 ? 'var(--pos)' : spPct > 0.01 ? 'var(--neg)' : 'var(--text3)';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">${long} / ${base}</td>
-      <td class="${colorCls(spPct)}" style="font-family:'IBM Plex Mono',monospace">${fmtSpread(spPct,'pct')}</td>
-      <td class="${colorCls(spUsd)}" style="font-family:'IBM Plex Mono',monospace">${fmtSpread(spUsd,'usd')}</td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:${structColor};font-weight:600">${struct}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-})();
 </script>
 </body>
 </html>
