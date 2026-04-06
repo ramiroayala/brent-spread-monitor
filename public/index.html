@@ -8,9 +8,14 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
 :root{--bg:#070b0f;--surface:#0c1219;--surface2:#111820;--border:#1b2733;--border2:#223040;--accent:#00c8ff;--accent2:#00e5a0;--warn:#ffd700;--text:#c8d8e8;--text2:#7a9ab0;--text3:#3d5570;--neg:#ff3d5a;--pos:#00e676;--curve1:#00c8ff;--curve2:#ffd700}
+[data-theme="light"]{
+  --bg:#f0f4f8;--surface:#ffffff;--surface2:#e8eef5;--border:#d0dae6;--border2:#b8c8d8;
+  --accent:#0077cc;--accent2:#00a875;--warn:#b38600;--text:#1a2a3a;--text2:#4a6278;--text3:#8aA4b8;
+  --neg:#cc1f38;--pos:#007a40;--curve1:#0077cc;--curve2:#b38600;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;min-height:100vh;transition:background .3s,color .3s}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,100,200,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,100,200,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
 .wrap{position:relative;z-index:1;max-width:1500px;margin:0 auto;padding:0 28px 60px}
 header{display:flex;align-items:flex-end;justify-content:space-between;padding:30px 0 24px;border-bottom:1px solid var(--border);margin-bottom:28px;flex-wrap:wrap;gap:14px}
 .logo-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.22em;color:var(--accent);text-transform:uppercase}
@@ -20,14 +25,15 @@ header{display:flex;align-items:flex-end;justify-content:space-between;padding:3
 .header-meta .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
 .header-meta .val{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px}
 .kpi-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:28px}
-.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;position:relative;overflow:hidden}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;position:relative;overflow:hidden;transition:background .3s,border-color .3s}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.4}
+[data-theme="light"] .kpi-card::before{opacity:.6}
 .kpi-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:.18em;color:var(--text3);text-transform:uppercase;margin-bottom:7px}
 .kpi-price{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:#fff;line-height:1}
 .kpi-var{margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500}
 .kpi-var.neg{color:var(--neg)}.kpi-var.pos{color:var(--pos)}.kpi-var.neutral{color:var(--text3)}
 .section-label{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.2em;color:var(--text3);text-transform:uppercase;margin-bottom:12px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:22px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:22px;transition:background .3s,border-color .3s}
 .card-header{padding:18px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .card-title{font-size:15px;font-weight:600;color:#fff}
 .card-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);margin-top:3px}
@@ -38,12 +44,18 @@ select{appearance:none;background:var(--surface2);border:1px solid var(--border2
 select:hover{border-color:var(--accent)}select:focus{outline:none;border-color:var(--accent)}select option{background:#111820}
 input[type=date]{appearance:none;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 9px;cursor:pointer;transition:border-color .15s;color-scheme:dark}
 input[type=date]:hover{border-color:var(--accent)}input[type=date]:focus{outline:none;border-color:var(--accent)}
+[data-theme="light"] input[type=date]{color-scheme:light}
+[data-theme="light"] select option{background:#fff}
 .toggle-group{display:flex;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;overflow:hidden}
 .toggle-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;padding:5px 12px;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .15s}
 .toggle-btn.active{background:var(--accent);color:#000}
+[data-theme="light"] .toggle-btn.active{color:#fff}
+[data-theme="light"] td.clickable:hover{background:rgba(0,119,204,.1)!important;outline:1px solid rgba(0,119,204,.4)}
+[data-theme="light"] td.clickable.selected{background:rgba(0,119,204,.15)!important;outline:1px solid var(--accent)}
 .period-pills{display:flex;gap:4px}
 .pill{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.06em;padding:4px 10px;cursor:pointer;border:1px solid var(--border2);border-radius:3px;background:var(--surface2);color:var(--text2);transition:all .15s;white-space:nowrap}
 .pill:hover{border-color:var(--accent);color:var(--text)}.pill.active{background:rgba(0,200,255,.15);border-color:var(--accent);color:var(--accent)}
+[data-theme="light"] .pill.active{background:rgba(0,119,204,.1)}
 .chart-wrap{position:relative}.chart-wrap.h380{height:380px}.chart-wrap.h260{height:260px}
 .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border)}
 .stat-cell{background:var(--surface);padding:11px 16px;text-align:center}
@@ -68,6 +80,8 @@ td.clickable.selected{background:rgba(0,200,255,.2)!important;outline:1px solid 
 .mx2-period-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:4px;cursor:pointer;transition:background .15s;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text2);border:1px solid transparent;user-select:none}
 .mx2-period-item:hover{background:rgba(0,200,255,.07);color:var(--text)}
 .mx2-period-item.active{background:rgba(0,200,255,.12);border-color:rgba(0,200,255,.3);color:var(--accent)}
+[data-theme="light"] .mx2-period-item.active{background:rgba(0,119,204,.1);border-color:rgba(0,119,204,.35)}
+[data-theme="light"] .mx2-period-item:hover{background:rgba(0,119,204,.06)}
 .mx2-radio-dot{width:8px;height:8px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;transition:all .15s}
 .mx2-period-item.active .mx2-radio-dot{background:var(--accent);border-color:var(--accent)}
 /* Forward curve */
@@ -95,9 +109,19 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
     <div class="logo-title">ICE Brent — Spread Monitor</div>
     <div class="logo-sub">CO1 · CO2 · CO3 · CO4 · CO5 · CO6 · CO7 — Calendar Spreads</div>
   </div>
-  <div class="header-meta">
-    <div class="lbl">Última actualización</div>
-    <div class="val" id="last-date">—</div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <button id="theme-toggle" onclick="toggleTheme()" style="
+      font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;
+      text-transform:uppercase;padding:6px 14px;border-radius:4px;cursor:pointer;
+      background:var(--surface2);border:1px solid var(--border2);color:var(--text2);
+      transition:all .2s;white-space:nowrap;
+    " onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)'">
+      ☀ Modo Claro
+    </button>
+    <div class="header-meta" style="text-align:right">
+      <div class="lbl">Última actualización</div>
+      <div class="val" id="last-date">—</div>
+    </div>
   </div>
 </header>
 
@@ -172,6 +196,9 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
         </div>
       </div>
     </div>
+    <div class="card-body" style="padding-top:10px">
+      <div class="matrix-wrap"><table id="matrix-compare"></table></div>
+    </div>
     <div class="mx2-controls">
       <div class="mx2-period-item" onclick="setMx2Period('1m',this)"><div class="mx2-radio-dot"></div>1 mes atrás</div>
       <div class="mx2-period-item" onclick="setMx2Period('2m',this)"><div class="mx2-radio-dot"></div>2 meses atrás</div>
@@ -183,9 +210,6 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
         <input type="date" id="mx2-custom-date" style="display:none;margin-left:10px"
           onchange="onMx2CustomDate()" onclick="event.stopPropagation()">
       </div>
-    </div>
-    <div class="card-body" style="padding-top:10px">
-      <div class="matrix-wrap"><table id="matrix-compare"></table></div>
     </div>
   </div>
 
@@ -293,7 +317,10 @@ function renderSpreadChart(){
   document.getElementById('spread-formula').textContent=spreadMode==='pct'?`${selLong} / ${selBase} − 1`:`${selLong} − ${selBase}`;
   const ctx=document.getElementById('spreadChart').getContext('2d');
   if(spreadChart)spreadChart.destroy();
-  spreadChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:series,borderColor:'#00c8ff',backgroundColor:'rgba(0,200,255,.06)',borderWidth:1.5,pointRadius:0,pointHoverRadius:6,pointHoverBackgroundColor:'#00c8ff',pointHoverBorderColor:'#fff',pointHoverBorderWidth:2,fill:true,tension:.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#0c1219',borderColor:'#1b2733',borderWidth:1,titleColor:'#7a9ab0',bodyColor:'#fff',titleFont:{family:'IBM Plex Mono',size:11},bodyFont:{family:'IBM Plex Mono',size:12},padding:10,caretSize:5,displayColors:false,callbacks:{title:i=>i[0].label,label:i=>{if(i.raw===null)return'';return spreadMode==='pct'?` ${selLong}/${selBase}:  ${i.raw>=0?'+':''}${i.raw.toFixed(3)}%`:` ${selLong}−${selBase}:  ${i.raw>=0?'+$':'-$'}${Math.abs(i.raw).toFixed(2)}`;}}}},scales:{x:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:10},maxTicksLimit:14,maxRotation:0},grid:{color:'rgba(27,39,51,.8)'}},y:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:10},callback:v=>spreadMode==='pct'?v.toFixed(1)+'%':'$'+v.toFixed(1)},grid:{color:'rgba(27,39,51,.8)'}}}}}); 
+  const _c1=getComputedStyle(document.documentElement).getPropertyValue('--curve1').trim()||'#00c8ff';
+  const _gridC=document.documentElement.getAttribute('data-theme')==='light'?'rgba(180,200,220,.5)':'rgba(27,39,51,.8)';
+  const _tickC=document.documentElement.getAttribute('data-theme')==='light'?'#8aa4b8':'#3d5570';
+  spreadChart=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:series,borderColor:_c1,backgroundColor:_c1+'18',borderWidth:1.5,pointRadius:0,pointHoverRadius:6,pointHoverBackgroundColor:_c1,pointHoverBorderColor:'#fff',pointHoverBorderWidth:2,fill:true,tension:.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:document.documentElement.getAttribute('data-theme')==='light'?'#fff':'#0c1219',borderColor:document.documentElement.getAttribute('data-theme')==='light'?'#b8c8d8':'#1b2733',borderWidth:1,titleColor:'#7a9ab0',bodyColor:document.documentElement.getAttribute('data-theme')==='light'?'#1a2a3a':'#fff',titleFont:{family:'IBM Plex Mono',size:11},bodyFont:{family:'IBM Plex Mono',size:12},padding:10,caretSize:5,displayColors:false,callbacks:{title:i=>i[0].label,label:i=>{if(i.raw===null)return'';return spreadMode==='pct'?` ${selLong}/${selBase}:  ${i.raw>=0?'+':''}${i.raw.toFixed(3)}%`:` ${selLong}−${selBase}:  ${i.raw>=0?'+$':'-$'}${Math.abs(i.raw).toFixed(2)}`;}}}},scales:{x:{ticks:{color:_tickC,font:{family:'IBM Plex Mono',size:10},maxTicksLimit:14,maxRotation:0},grid:{color:_gridC}},y:{ticks:{color:_tickC,font:{family:'IBM Plex Mono',size:10},callback:v=>spreadMode==='pct'?v.toFixed(1)+'%':'$'+v.toFixed(1)},grid:{color:_gridC}}}}}); 
 }
 renderSpreadChart();
 
@@ -363,15 +390,43 @@ function onMx2CustomDate(){
 function buildForwardChart(){
   const data1=CONTRACTS.map(c=>TODAY_ROW[c]);
   const data2=mx2Row?CONTRACTS.map(c=>mx2Row[c]):null;
+  const _cs=getComputedStyle(document.documentElement);
+  const _cv1=_cs.getPropertyValue('--curve1').trim()||'#00c8ff';
+  const _cv2=_cs.getPropertyValue('--curve2').trim()||'#ffd700';
+  const _gridC=document.documentElement.getAttribute('data-theme')==='light'?'rgba(180,200,220,.5)':'rgba(27,39,51,.8)';
+  const _tickC=document.documentElement.getAttribute('data-theme')==='light'?'#8aa4b8':'#3d5570';
   const mk=(data,color,label,dash=[])=>({label,data,borderColor:color,backgroundColor:color+'18',borderWidth:2,borderDash:dash,pointBackgroundColor:color,pointRadius:5,pointHoverRadius:7,fill:false,tension:.3});
-  const datasets=[mk(data1,'#00c8ff',`Hoy (${TODAY_ROW.Date})`)];
-  if(data2)datasets.push(mk(data2,'#ffd700',mx2Row.Date,[6,3]));
+  const datasets=[mk(data1,_cv1,`Hoy (${TODAY_ROW.Date})`)];
+  if(data2)datasets.push(mk(data2,_cv2,mx2Row.Date,[6,3]));
   const ctx=document.getElementById('curveChart').getContext('2d');
   if(curveChart)curveChart.destroy();
-  curveChart=new Chart(ctx,{type:'line',data:{labels:CONTRACTS,datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},plugins:{legend:{display:false},tooltip:{backgroundColor:'#0c1219',borderColor:'#1b2733',borderWidth:1,titleColor:'#7a9ab0',bodyColor:'#fff',titleFont:{family:'IBM Plex Mono',size:11},bodyFont:{family:'IBM Plex Mono',size:12},callbacks:{label:i=>` ${i.dataset.label}: $${i.raw.toFixed(2)}`}}},scales:{x:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:11}},grid:{color:'rgba(27,39,51,.8)'}},y:{ticks:{color:'#3d5570',font:{family:'IBM Plex Mono',size:10},callback:v=>'$'+v.toFixed(0)},grid:{color:'rgba(27,39,51,.8)'}}}}}); 
+  curveChart=new Chart(ctx,{type:'line',data:{labels:CONTRACTS,datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},plugins:{legend:{display:false},tooltip:{backgroundColor:document.documentElement.getAttribute('data-theme')==='light'?'#fff':'#0c1219',borderColor:document.documentElement.getAttribute('data-theme')==='light'?'#b8c8d8':'#1b2733',borderWidth:1,titleColor:'#7a9ab0',bodyColor:document.documentElement.getAttribute('data-theme')==='light'?'#1a2a3a':'#fff',titleFont:{family:'IBM Plex Mono',size:11},bodyFont:{family:'IBM Plex Mono',size:12},callbacks:{label:i=>` ${i.dataset.label}: $${i.raw.toFixed(2)}`}}},scales:{x:{ticks:{color:_tickC,font:{family:'IBM Plex Mono',size:11}},grid:{color:_gridC}},y:{ticks:{color:_tickC,font:{family:'IBM Plex Mono',size:10},callback:v=>'$'+v.toFixed(0)},grid:{color:_gridC}}}}}); 
   document.getElementById('curve-legend').innerHTML=[{color:'#00c8ff',label:`Curva 1 — Hoy (${TODAY_ROW.Date})`},...(mx2Row?[{color:'#ffd700',label:`Curva 2 — ${mx2Row.Date}`}]:[])].map(i=>`<div class="leg-item"><div class="leg-dot" style="background:${i.color}"></div><span>${i.label}</span></div>`).join('');
 }
 buildForwardChart();
+
+// ── THEME TOGGLE ──────────────────────────────────────────
+let darkMode = true;
+function toggleTheme() {
+  darkMode = !darkMode;
+  const btn = document.getElementById('theme-toggle');
+  if (darkMode) {
+    document.documentElement.removeAttribute('data-theme');
+    btn.textContent = '☀ Modo Claro';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
+    btn.textContent = '☾ Modo Oscuro';
+  }
+  // Rebuild charts so colors pick up new CSS vars
+  renderSpreadChart();
+  buildForwardChart();
+}
+
+// ── AUTO-SELECT 1 MES ATRÁS ON LOAD ──────────────────────
+(function() {
+  const firstItem = document.querySelector('.mx2-period-item');
+  if (firstItem) setMx2Period('1m', firstItem);
+})();
 </script>
 </body>
 </html>
