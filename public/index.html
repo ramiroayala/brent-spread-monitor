@@ -467,18 +467,13 @@ function toggleTheme() {
 
 
 
+
+
 // ── NEWS BANNER ───────────────────────────────────────────
 (function() {
-  var RSS  = 'https://oilprice.com/rss/main';
-  var MAX  = 8;
-  var track = document.getElementById('nb-track');
-
-  // Three proxies tried in order
-  var PROXIES = [
-    'https://corsproxy.io/?' + RSS,
-    'https://api.allorigins.win/get?url=' + encodeURIComponent(RSS),
-    'https://thingproxy.freeboard.io/fetch/' + RSS
-  ];
+  var ENDPOINT = '/api/news';
+  var MAX      = 8;
+  var track    = document.getElementById('nb-track');
 
   function timeAgo(dateStr) {
     if (!dateStr) return '';
@@ -513,27 +508,37 @@ function toggleTheme() {
     var doubled = items.concat(items);
     var scroll  = document.createElement('div');
     scroll.className = 'nb-scroll';
+
     doubled.forEach(function(item) {
       var a = document.createElement('a');
       a.className = 'nb-item';
-      a.href   = item.link;
-      a.target = '_blank';
-      a.rel    = 'noopener noreferrer';
+      a.href      = item.link;
+      a.target    = '_blank';
+      a.rel       = 'noopener noreferrer';
 
       var s = document.createElement('span');
-      s.className = 'nb-source';
+      s.className   = 'nb-source';
       s.textContent = 'OilPrice';
       a.appendChild(s);
 
       if (item.pubDate) {
-        var d1 = document.createElement('span'); d1.className = 'nb-dot'; a.appendChild(d1);
-        var ag = document.createElement('span'); ag.className = 'nb-age';
-        ag.textContent = timeAgo(item.pubDate); a.appendChild(ag);
+        var d1 = document.createElement('span');
+        d1.className = 'nb-dot';
+        a.appendChild(d1);
+        var ag = document.createElement('span');
+        ag.className   = 'nb-age';
+        ag.textContent = timeAgo(item.pubDate);
+        a.appendChild(ag);
       }
 
-      var d2 = document.createElement('span'); d2.className = 'nb-dot'; a.appendChild(d2);
-      var ti = document.createElement('span'); ti.className = 'nb-title';
-      ti.textContent = item.title; a.appendChild(ti);
+      var d2 = document.createElement('span');
+      d2.className = 'nb-dot';
+      a.appendChild(d2);
+
+      var ti = document.createElement('span');
+      ti.className   = 'nb-title';
+      ti.textContent = item.title;
+      a.appendChild(ti);
 
       a.addEventListener('mouseenter', function() { scroll.classList.add('paused'); });
       a.addEventListener('mouseleave', function() { scroll.classList.remove('paused'); });
@@ -552,38 +557,22 @@ function toggleTheme() {
   function showError() {
     var div = document.createElement('div');
     div.className   = 'nb-status';
-    div.textContent = 'Sin conexión a noticias';
+    div.textContent = 'Sin conexion a noticias';
     track.innerHTML = '';
     track.appendChild(div);
   }
 
-  function extractXML(proxyIdx, rawData) {
-    // allorigins wraps in {contents: "..."}, others return raw XML
-    if (typeof rawData === 'object' && rawData.contents) return rawData.contents;
-    if (typeof rawData === 'string') return rawData;
-    return null;
-  }
-
-  function tryProxy(idx) {
-    if (idx >= PROXIES.length) { showError(); return; }
-    fetch(PROXIES[idx])
-      .then(function(r) {
-        // allorigins returns JSON, others return raw XML text
-        var ct = r.headers.get('content-type') || '';
-        if (ct.indexOf('json') >= 0) return r.json();
-        return r.text();
-      })
-      .then(function(data) {
-        var xml = extractXML(idx, data);
-        if (!xml) { tryProxy(idx + 1); return; }
-        var items = parseRSS(xml).slice(0, MAX);
-        if (items.length === 0) { tryProxy(idx + 1); return; }
-        buildTicker(items);
-      })
-      .catch(function() { tryProxy(idx + 1); });
-  }
-
-  tryProxy(0);
+  fetch(ENDPOINT)
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(xml) {
+      var items = parseRSS(xml).slice(0, MAX);
+      if (items.length === 0) { showError(); return; }
+      buildTicker(items);
+    })
+    .catch(function() { showError(); });
 })();
 </script>
 </body>
