@@ -464,49 +464,80 @@ function toggleTheme() {
 })();
 
 
+
 // ── NEWS BANNER ───────────────────────────────────────────
-(async function loadNews() {
-  const RSS_URL  = 'https://oilprice.com/rss/main';
-  const PROXY    = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
-  const MAX_ITEMS = 8;
-  const track    = document.getElementById('nb-track');
+(function() {
+  var RSS    = 'https://oilprice.com/rss/main';
+  var PROXY  = 'https://api.allorigins.win/get?url=' + encodeURIComponent(RSS);
+  var MAX    = 8;
+  var track  = document.getElementById('nb-track');
 
   function timeAgo(dateStr) {
-    const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-    if (diff < 60)   return 'hace ' + Math.floor(diff) + 's';
-    if (diff < 3600) return 'hace ' + Math.floor(diff/60) + 'min';
-    if (diff < 86400)return 'hace ' + Math.floor(diff/3600) + 'h';
+    var diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+    if (diff < 60)    return 'hace ' + Math.floor(diff) + 's';
+    if (diff < 3600)  return 'hace ' + Math.floor(diff/60) + 'min';
+    if (diff < 86400) return 'hace ' + Math.floor(diff/3600) + 'h';
     return 'hace ' + Math.floor(diff/86400) + 'd';
   }
 
+  function parseRSS(xml) {
+    var parser = new DOMParser();
+    var doc    = parser.parseFromString(xml, 'text/xml');
+    var items  = doc.querySelectorAll('item');
+    var result = [];
+    items.forEach(function(item) {
+      var title = item.querySelector('title');
+      var link  = item.querySelector('link');
+      var pub   = item.querySelector('pubDate');
+      if (title && link) {
+        result.push({
+          title:   title.textContent.replace(/&amp;/g,'&').replace(/&#39;/g,"'"),
+          link:    link.textContent.trim(),
+          pubDate: pub ? pub.textContent : ''
+        });
+      }
+    });
+    return result;
+  }
+
   function buildTicker(items) {
-    // Build doubled list for seamless loop
-    const doubled = [...items, ...items];
-    const scroll  = document.createElement('div');
+    var doubled = items.concat(items);
+    var scroll  = document.createElement('div');
     scroll.className = 'nb-scroll';
 
-    doubled.forEach(item => {
-      const a = document.createElement('a');
+    doubled.forEach(function(item) {
+      var a = document.createElement('a');
       a.className = 'nb-item';
       a.href      = item.link;
       a.target    = '_blank';
       a.rel       = 'noopener noreferrer';
 
-      const source = item.author || 'OilPrice';
-      const age    = timeAgo(item.pubDate);
-      const title  = item.title.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"');
+      var age    = item.pubDate ? timeAgo(item.pubDate) : '';
+      var source = document.createElement('span');
+      source.className = 'nb-source';
+      source.textContent = 'OilPrice';
 
-      a.innerHTML = `
-        <span class="nb-source">${source}</span>
-        <span class="nb-dot"></span>
-        <span class="nb-age">${age}</span>
-        <span class="nb-dot"></span>
-        <span class="nb-title">${title}</span>
-      `;
+      var dot1 = document.createElement('span');
+      dot1.className = 'nb-dot';
 
-      // Pause on hover
-      a.addEventListener('mouseenter', () => scroll.classList.add('paused'));
-      a.addEventListener('mouseleave', () => scroll.classList.remove('paused'));
+      var ageEl = document.createElement('span');
+      ageEl.className = 'nb-age';
+      ageEl.textContent = age;
+
+      var dot2 = document.createElement('span');
+      dot2.className = 'nb-dot';
+
+      var titleEl = document.createElement('span');
+      titleEl.className = 'nb-title';
+      titleEl.textContent = item.title;
+
+      a.appendChild(source);
+      if (age) { a.appendChild(dot1); a.appendChild(ageEl); }
+      a.appendChild(dot2);
+      a.appendChild(titleEl);
+
+      a.addEventListener('mouseenter', function() { scroll.classList.add('paused'); });
+      a.addEventListener('mouseleave', function() { scroll.classList.remove('paused'); });
 
       scroll.appendChild(a);
     });
@@ -514,26 +545,30 @@ function toggleTheme() {
     track.innerHTML = '';
     track.appendChild(scroll);
 
-    // Adjust animation duration based on content width
-    const totalW = scroll.scrollWidth / 2;
-    const speed  = 80; // px/second
-    const dur    = Math.round(totalW / speed);
-    scroll.style.animationDuration = dur + 's';
+    setTimeout(function() {
+      var totalW = scroll.scrollWidth / 2;
+      var dur    = Math.round(totalW / 80);
+      scroll.style.animationDuration = dur + 's';
+    }, 100);
   }
 
-  try {
-    const res  = await fetch(PROXY);
-    const data = await res.json();
-
-    if (data.status !== 'ok' || !data.items || data.items.length === 0) {
-      throw new Error('No items');
-    }
-
-    buildTicker(data.items.slice(0, MAX_ITEMS));
-
-  } catch(e) {
-    track.innerHTML = '<div class="nb-status" style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;padding:8px 14px">Sin conexión a noticias</div>';
+  function showError() {
+    var div = document.createElement('div');
+    div.className = 'nb-status';
+    div.textContent = 'Noticias no disponibles';
+    track.innerHTML = '';
+    track.appendChild(div);
   }
+
+  fetch(PROXY)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var xml   = data.contents;
+      var items = parseRSS(xml).slice(0, MAX);
+      if (items.length === 0) { showError(); return; }
+      buildTicker(items);
+    })
+    .catch(function() { showError(); });
 })();
 </script>
 </body>
