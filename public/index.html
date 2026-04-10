@@ -364,7 +364,7 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
   <div class="card-header">
     <div>
       <div class="card-title" id="sim-scenario-title">Escenario: Guerra prolongada (+6M)</div>
-      <div class="card-sub">Precios simulados editables · P&L = vender hoy vs precio simulado en el horizonte elegido</div>
+      <div class="card-sub">Precios simulados editables · PP&L = vender hoy vs precio simulado en el horizonte elegidoL del hedge: vendiste hoy · si precio sube = pérdida · si precio baja = ganancia</div>
     </div>
     <div class="controls">
       <span class="ctrl-label">Horizonte</span>
@@ -735,7 +735,8 @@ function calcSimResults() {
     var el=document.getElementById('sim-inp-'+c);
     if(!el) return;
     var simPx=parseFloat(el.value)||prices[c], curPx=prices[c];
-    var pnlPct=(simPx/curPx-1)*100, pnlUsd=simPx-curPx;
+    // Producer sells today at curPx → if simPx rises, hedge loses; if simPx falls, hedge gains
+    var pnlPct=(curPx/simPx-1)*100, pnlUsd=curPx-simPx;
     var cls=pnlPct>=0?'pos':'neg';
     html+='<div class="sim-result-card"><div class="sim-res-lbl">'+c+'</div>'+
       '<div class="sim-res-px">$'+simPx.toFixed(2)+'</div>'+
@@ -749,7 +750,7 @@ function calcSimResults() {
     '<div class="sim-tot-cell"><div class="sim-tot-lbl">P&L promedio todos contratos</div><div class="sim-tot-val '+avgCls+'">'+(avgPnl>=0?'+':'')+avgPnl.toFixed(2)+'%</div></div>'+
     '<div class="sim-tot-cell"><div class="sim-tot-lbl">Escenario</div><div class="sim-tot-val" style="font-size:11px;color:var(--text)">'+SCENARIOS[simScenario].name+'</div></div>'+
     '<div class="sim-tot-cell"><div class="sim-tot-lbl">Horizonte</div><div class="sim-tot-val" style="color:var(--accent)">'+simHorizon.toUpperCase()+'</div></div>'+
-    '<div class="sim-tot-cell"><div class="sim-tot-lbl">Dirección</div><div class="sim-tot-val '+avgCls+'">'+(avgPnl>=0?'Alcista':'Bajista')+'</div></div>';
+    '<div class="sim-tot-cell"><div class="sim-tot-lbl">Dirección</div><div class="sim-tot-val '+avgCls+'">'+(avgPnl>=0?'Ganancia en hedge':'Pérdida en hedge')+'</div></div>';
   renderSimChart();
 }
 
