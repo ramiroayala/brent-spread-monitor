@@ -122,31 +122,7 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
 .pct-bar-wrap{height:4px;background:var(--border2);border-radius:2px;margin-top:6px;overflow:visible;position:relative}
 .pct-bar-fill{height:100%;background:var(--neg);border-radius:2px}
 .pct-marker{position:absolute;top:-4px;width:2px;height:12px;background:var(--accent);border-radius:1px;transform:translateX(-50%)}
-.scen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-.scen-card{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:12px 14px;cursor:pointer;transition:all .15s}
-.scen-card:hover{border-color:var(--accent)}.scen-card.active{border-color:var(--accent);background:rgba(0,200,255,.07)}
-[data-theme="light"] .scen-card.active{background:rgba(0,119,204,.06)}
-.scen-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
-.scen-desc{font-size:10px;color:var(--text3);line-height:1.4}
-.scen-tag{display:inline-block;font-size:8px;font-weight:700;padding:2px 6px;border-radius:2px;font-family:'JetBrains Mono',monospace;margin-top:6px}
-.tag-bull{background:rgba(63,185,80,.15);color:#3fb950}.tag-bear{background:rgba(248,81,73,.15);color:#f85149}
-.tag-neu{background:rgba(227,179,65,.12);color:#e3b341}.tag-stat{background:rgba(88,166,255,.12);color:var(--accent)}
-.sim-inputs{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:16px}
-.sim-input-block{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;text-align:center}
-.sim-co-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.sim-co-price{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.sim-input-wrap input[type=number]{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:3px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 6px;text-align:center}
-.sim-input-wrap input[type=number]:focus{outline:none;border-color:var(--accent)}
-.sim-result-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:16px}
-.sim-result-card{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:10px;text-align:center}
-.sim-res-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.sim-res-px{font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text);margin-bottom:2px}
-.sim-res-pnl{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.sim-total-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden}
-.sim-tot-cell{background:var(--surface);padding:10px 14px;text-align:center}
-.sim-tot-lbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
-.sim-tot-val{font-size:16px;font-weight:600;font-family:'JetBrains Mono',monospace}
-@media(max-width:900px){.scen-grid{grid-template-columns:1fr 1fr}.pct-grid{grid-template-columns:repeat(3,1fr)}.sim-inputs,.sim-result-grid{grid-template-columns:repeat(4,1fr)}}
+pct-grid{grid-template-columns:repeat(3,1fr)}.sim-inputs,.sim-result-grid{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
@@ -179,7 +155,6 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('monitor',this)">Monitor de Spreads</button>
   <button class="tab-btn" onclick="switchTab('heatmap',this)">Heatmap Costo de Roll</button>
-  <button class="tab-btn" onclick="switchTab('simulator',this)">Simulador de Curva</button>
 </div>
 <div class="tab-panel active" id="tab-monitor">
 
@@ -347,46 +322,6 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
 </div><!-- /tab-heatmap -->
 
 
-<!-- TAB: Simulador -->
-<div class="tab-panel" id="tab-simulator">
-<p class="section-label">Escenarios de mercado — seleccioná uno o editá los precios manualmente</p>
-<div class="scen-grid"><div class="scen-card active" onclick="selectScenario(0,this)"><div class="scen-name">Guerra prolongada (+6M)</div><div class="scen-desc">Backwardation extrema sostenida: Ormuz bloqueado, OPEC recortes. CO1 permanece en $90+.</div><span class="scen-tag tag-bear">Bajista</span></div>
-<div class="scen-card" onclick="selectScenario(1,this)"><div class="scen-name">Resolución en 1 mes</div><div class="scen-desc">Ormuz se reabre. Precios revierten rápidamente al promedio pre-conflicto (~$75).</div><span class="scen-tag tag-bull">Alcista</span></div>
-<div class="scen-card" onclick="selectScenario(2,this)"><div class="scen-name">Resolución en 2–3 meses</div><div class="scen-desc">Negociación diplomática. CO1 regresa a $80, backwardation se comprime gradualmente.</div><span class="scen-tag tag-bull">Alcista</span></div>
-<div class="scen-card" onclick="selectScenario(3,this)"><div class="scen-name">Promedio histórico 3Y</div><div class="scen-desc">Mean reversion a niveles 2023–2024. CO1 → $83, spreads en percentil 50 histórico.</div><span class="scen-tag tag-stat">Estadístico</span></div>
-<div class="scen-card" onclick="selectScenario(4,this)"><div class="scen-name">Shock de demanda China</div><div class="scen-desc">Recuperación macro China impulsa demanda. Precio sube pero curva se aplana.</div><span class="scen-tag tag-bull">Alcista</span></div>
-<div class="scen-card" onclick="selectScenario(5,this)"><div class="scen-name">Recesión global</div><div class="scen-desc">Caída de demanda. CO1 colapsa a $55–60. Curva pasa a contango profundo.</div><span class="scen-tag tag-bear">Bajista</span></div>
-<div class="scen-card" onclick="selectScenario(6,this)"><div class="scen-name">OPEC+ aumenta producción</div><div class="scen-desc">Arabia Saudita abandona recortes voluntarios. Contango moderado.</div><span class="scen-tag tag-bear">Bajista</span></div>
-<div class="scen-card" onclick="selectScenario(7,this)"><div class="scen-name">Estadístico: 1σ alcista</div><div class="scen-desc">CO1 en percentil 84 histórico de 3 años: ~$88. Backwardation moderada.</div><span class="scen-tag tag-stat">Estadístico</span></div>
-<div class="scen-card" onclick="selectScenario(8,this)"><div class="scen-name">Estadístico: 1σ bajista</div><div class="scen-desc">CO1 en percentil 16 histórico de 3 años: ~$65. Near-contango.</div><span class="scen-tag tag-stat">Estadístico</span></div>
-</div>
-<div class="card">
-  <div class="card-header">
-    <div>
-      <div class="card-title" id="sim-scenario-title">Escenario: Guerra prolongada (+6M)</div>
-      <div class="card-sub">Precios simulados editables · PP&L = vender hoy vs precio simulado en el horizonte elegidoL del hedge: vendiste hoy · si precio sube = pérdida · si precio baja = ganancia</div>
-    </div>
-    <div class="controls">
-      <span class="ctrl-label">Horizonte</span>
-      <div class="period-pills" id="sim-horizon-pills">
-        <span class="pill" onclick="setSimHorizon(this,'1m')">1M</span>
-        <span class="pill active" onclick="setSimHorizon(this,'2m')">2M</span>
-        <span class="pill" onclick="setSimHorizon(this,'3m')">3M</span>
-        <span class="pill" onclick="setSimHorizon(this,'6m')">6M</span>
-        <span class="pill" onclick="setSimHorizon(this,'1y')">1A</span>
-        <span class="pill" onclick="setSimHorizon(this,'custom')">Custom</span>
-      </div>
-      <input type="date" id="sim-custom-date" style="display:none" onchange="calcSimResults()">
-    </div>
-  </div>
-  <div class="card-body">
-    <div class="sim-inputs" id="sim-inputs"></div>
-    <div class="sim-result-grid" id="sim-results"></div>
-    <div class="sim-total-strip" id="sim-total"></div>
-    <div style="margin-top:14px"><div class="chart-wrap h260"><canvas id="simChart"></canvas></div></div>
-  </div>
-</div>
-</div><!-- /tab-simulator -->
 
 </div>
 
@@ -579,7 +514,6 @@ function switchTab(name, btn) {
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='heatmap')   initHeatmap();
-  if(name==='simulator') initSimulator();
 }
 
 // ── HEATMAP ───────────────────────────────────────────────────
@@ -670,107 +604,6 @@ function renderPctChart() {
   ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:_tickC,font:{family:'JetBrains Mono',size:11}}},tooltip:{backgroundColor:document.documentElement.getAttribute('data-theme')==='light'?'#fff':'#0c1219',titleColor:'#7a9ab0',bodyColor:document.documentElement.getAttribute('data-theme')==='light'?'#1a2a3a':'#fff',titleFont:{family:'JetBrains Mono',size:11},bodyFont:{family:'JetBrains Mono',size:11}}},scales:{x:{ticks:{color:_tickC,font:{family:'JetBrains Mono',size:11}},grid:{color:_gridC}},y:{ticks:{color:_tickC,font:{family:'JetBrains Mono',size:11},callback:function(v){return v.toFixed(1)+'%'}},grid:{color:_gridC}}}}});
 }
 
-// ── SCENARIO SIMULATOR ────────────────────────────────────────
-var simInitDone=false, simChart=null, simHorizon='2m', simScenario=0;
-
-var SCENARIOS=[
-  {name:'Guerra prolongada (+6M)',    deltas:{CO1:-0.15,CO2:-0.08,CO3:-0.05,CO4:-0.04,CO5:-0.03,CO6:-0.02,CO7:-0.01}},
-  {name:'Resolución en 1 mes',        deltas:{CO1:0.35,CO2:0.25,CO3:0.15,CO4:0.08,CO5:0.05,CO6:0.03,CO7:0.02}},
-  {name:'Resolución en 2–3 meses',    deltas:{CO1:0.20,CO2:0.15,CO3:0.10,CO4:0.05,CO5:0.03,CO6:0.02,CO7:0.01}},
-  {name:'Promedio histórico 3Y',      deltas:{CO1:0.05,CO2:0.03,CO3:0.02,CO4:0.00,CO5:-0.01,CO6:-0.01,CO7:-0.01}},
-  {name:'Shock de demanda China',     deltas:{CO1:0.10,CO2:0.08,CO3:0.05,CO4:0.03,CO5:0.02,CO6:0.01,CO7:0.01}},
-  {name:'Recesión global',            deltas:{CO1:-0.40,CO2:-0.35,CO3:-0.30,CO4:-0.25,CO5:-0.20,CO6:-0.15,CO7:-0.12}},
-  {name:'OPEC+ aumenta producción',   deltas:{CO1:-0.20,CO2:-0.15,CO3:-0.10,CO4:-0.07,CO5:-0.05,CO6:-0.03,CO7:-0.02}},
-  {name:'Estadístico: 1σ alcista',    deltas:{CO1:0.08,CO2:0.05,CO3:0.03,CO4:0.02,CO5:0.01,CO6:0.01,CO7:0.00}},
-  {name:'Estadístico: 1σ bajista',    deltas:{CO1:-0.25,CO2:-0.20,CO3:-0.15,CO4:-0.10,CO5:-0.07,CO6:-0.05,CO7:-0.03}}
-];
-
-function initSimulator() {
-  if(simInitDone) return;
-  simInitDone=true;
-  renderSimInputs();
-  applyScenarioToInputs(0);
-  calcSimResults();
-}
-
-function selectScenario(idx, el) {
-  simScenario=idx;
-  document.querySelectorAll('.scen-card').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('sim-scenario-title').textContent='Escenario: '+SCENARIOS[idx].name;
-  applyScenarioToInputs(idx);
-  calcSimResults();
-}
-
-function applyScenarioToInputs(idx) {
-  var scen=SCENARIOS[idx], prices=ROLL_DATA.today_prices;
-  ['CO1','CO2','CO3','CO4','CO5','CO6','CO7'].forEach(function(c) {
-    var el=document.getElementById('sim-inp-'+c);
-    if(el) el.value=(prices[c]*(1+(scen.deltas[c]||0))).toFixed(2);
-  });
-}
-
-function renderSimInputs() {
-  var prices=ROLL_DATA.today_prices, html='';
-  ['CO1','CO2','CO3','CO4','CO5','CO6','CO7'].forEach(function(c) {
-    html+='<div class="sim-input-block"><div class="sim-co-lbl">'+c+'</div>'+
-      '<div class="sim-co-price">Hoy: $'+prices[c].toFixed(2)+'</div>'+
-      '<div class="sim-input-wrap"><input type="number" id="sim-inp-'+c+'" value="'+prices[c].toFixed(2)+'" step="0.01" onchange="calcSimResults()"></div></div>';
-  });
-  document.getElementById('sim-inputs').innerHTML=html;
-}
-
-function setSimHorizon(el, h) {
-  simHorizon=h;
-  document.querySelectorAll('#sim-horizon-pills .pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  var cd=document.getElementById('sim-custom-date');
-  cd.style.display=h==='custom'?'inline-block':'none';
-  calcSimResults();
-}
-
-function calcSimResults() {
-  var prices=ROLL_DATA.today_prices, html='', totalPnl=0;
-  ['CO1','CO2','CO3','CO4','CO5','CO6','CO7'].forEach(function(c) {
-    var el=document.getElementById('sim-inp-'+c);
-    if(!el) return;
-    var simPx=parseFloat(el.value)||prices[c], curPx=prices[c];
-    // Producer sells today at curPx → if simPx rises, hedge loses; if simPx falls, hedge gains
-    var pnlPct=(curPx/simPx-1)*100, pnlUsd=curPx-simPx;
-    var cls=pnlPct>=0?'pos':'neg';
-    html+='<div class="sim-result-card"><div class="sim-res-lbl">'+c+'</div>'+
-      '<div class="sim-res-px">$'+simPx.toFixed(2)+'</div>'+
-      '<div class="sim-res-pnl '+cls+'">'+(pnlPct>=0?'+':'')+pnlPct.toFixed(2)+'%</div>'+
-      '<div style="font-size:9px;color:var(--text3);font-family:\'JetBrains Mono\',monospace">'+(pnlUsd>=0?'+$':'-$')+Math.abs(pnlUsd).toFixed(2)+'/bbl</div></div>';
-    totalPnl+=pnlPct;
-  });
-  document.getElementById('sim-results').innerHTML=html;
-  var avgPnl=totalPnl/7, avgCls=avgPnl>=0?'pos':'neg';
-  document.getElementById('sim-total').innerHTML=
-    '<div class="sim-tot-cell"><div class="sim-tot-lbl">P&L promedio todos contratos</div><div class="sim-tot-val '+avgCls+'">'+(avgPnl>=0?'+':'')+avgPnl.toFixed(2)+'%</div></div>'+
-    '<div class="sim-tot-cell"><div class="sim-tot-lbl">Escenario</div><div class="sim-tot-val" style="font-size:11px;color:var(--text)">'+SCENARIOS[simScenario].name+'</div></div>'+
-    '<div class="sim-tot-cell"><div class="sim-tot-lbl">Horizonte</div><div class="sim-tot-val" style="color:var(--accent)">'+simHorizon.toUpperCase()+'</div></div>'+
-    '<div class="sim-tot-cell"><div class="sim-tot-lbl">Dirección</div><div class="sim-tot-val '+avgCls+'">'+(avgPnl>=0?'Ganancia en hedge':'Pérdida en hedge')+'</div></div>';
-  renderSimChart();
-}
-
-function renderSimChart() {
-  var prices=ROLL_DATA.today_prices;
-  var labels=['CO1','CO2','CO3','CO4','CO5','CO6','CO7'];
-  var curData=labels.map(c=>prices[c]);
-  var simData=labels.map(c=>{var el=document.getElementById('sim-inp-'+c);return el?parseFloat(el.value):prices[c];});
-  var _c1=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#00c8ff';
-  var _c2=getComputedStyle(document.documentElement).getPropertyValue('--warn').trim()||'#ffd700';
-  var _gridC=document.documentElement.getAttribute('data-theme')==='light'?'rgba(180,200,220,.5)':'rgba(27,39,51,.8)';
-  var _tickC=document.documentElement.getAttribute('data-theme')==='light'?'#8aa4b8':'#3d5570';
-  var ctx=document.getElementById('simChart').getContext('2d');
-  if(simChart) simChart.destroy();
-  simChart=new Chart(ctx,{type:'line',data:{labels,datasets:[
-    {label:'Curva actual (hoy)',data:curData,borderColor:_c1,backgroundColor:_c1+'18',borderWidth:2,pointRadius:5,fill:true,tension:.3},
-    {label:'Curva simulada ('+simHorizon+')',data:simData,borderColor:_c2,backgroundColor:_c2+'18',borderWidth:2,borderDash:[6,3],pointRadius:5,fill:false,tension:.3}
-  ]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},plugins:{legend:{labels:{color:_tickC,font:{family:'JetBrains Mono',size:11}}},tooltip:{backgroundColor:document.documentElement.getAttribute('data-theme')==='light'?'#fff':'#0c1219',titleColor:'#7a9ab0',bodyColor:document.documentElement.getAttribute('data-theme')==='light'?'#1a2a3a':'#fff',titleFont:{family:'JetBrains Mono',size:11},bodyFont:{family:'JetBrains Mono',size:11},callbacks:{label:function(i){return ' '+i.dataset.label+': $'+i.raw.toFixed(2);}}}},scales:{x:{ticks:{color:_tickC,font:{family:'JetBrains Mono',size:12}},grid:{color:_gridC}},y:{ticks:{color:_tickC,font:{family:'JetBrains Mono',size:11},callback:function(v){return '$'+v.toFixed(0);}},grid:{color:_gridC}}}}});
-}
-
-</script>
+// ── SCENARIO SIMULATOR ────────────────────────────────────────</script>
 </body>
 </html>
