@@ -98,27 +98,6 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
 @media(max-width:1200px){.dual-matrix{grid-template-columns:1fr}}
 @media(max-width:1000px){.kpi-row{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:700px){.kpi-row{grid-template-columns:repeat(3,1fr)};header{flex-direction:column;align-items:flex-start}}
-
-/* ── NEWS BANNER ─────────────────────────────────────────── */
-.news-banner{background:var(--surface2);border-bottom:1px solid var(--border);overflow:hidden}
-.nb-inner{display:flex;align-items:stretch;min-height:36px}
-.nb-tag{background:var(--accent);color:#0d1117;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:0 14px;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;font-family:'JetBrains Mono',monospace}
-[data-theme="light"] .nb-tag{color:#fff}
-.nb-track{flex:1;overflow:hidden;position:relative}
-.nb-track::before{content:'';position:absolute;left:0;top:0;bottom:0;width:28px;background:linear-gradient(to right,var(--surface2),transparent);z-index:2;pointer-events:none}
-.nb-track::after{content:'';position:absolute;right:0;top:0;bottom:0;width:28px;background:linear-gradient(to left,var(--surface2),transparent);z-index:2;pointer-events:none}
-.nb-scroll{display:flex;white-space:nowrap;animation:nb-slide 55s linear infinite}
-.nb-scroll.paused{animation-play-state:paused}
-@keyframes nb-slide{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.nb-item{display:inline-flex;align-items:center;gap:8px;padding:0 20px 0 0;border-right:1px solid var(--border);margin-right:20px;text-decoration:none;color:var(--text);cursor:pointer}
-.nb-item:hover .nb-title{color:var(--accent)}
-.nb-source{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0}
-.nb-dot{width:3px;height:3px;border-radius:50%;background:var(--text3);flex-shrink:0}
-.nb-age{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0}
-.nb-title{font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;transition:color .15s}
-.nb-status{padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);display:flex;align-items:center;gap:8px}
-.nb-spinner{width:10px;height:10px;border:1.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -147,20 +126,6 @@ footer{border-top:1px solid var(--border);padding-top:18px;display:flex;justify-
 </header>
 
 
-
-
-<!-- ══ NEWS BANNER ══════════════════════════════════════════ -->
-<div class="news-banner" id="news-banner">
-  <div class="nb-inner">
-    <div class="nb-tag">Oil News</div>
-    <div class="nb-track" id="nb-track">
-      <div class="nb-status" id="nb-status">
-        <div class="nb-spinner"></div>
-        <span>Cargando noticias...</span>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- KPI ROW -->
 <div class="kpi-row" id="kpi-row"></div>
@@ -470,96 +435,6 @@ function toggleTheme() {
 
 
 
-
-
-// ── NEWS BANNER ───────────────────────────────────────────
-(function() {
-  var track = document.getElementById('nb-track');
-
-  function timeAgo(dateStr) {
-    if (!dateStr) return '';
-    var diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-    if (diff < 60)    return 'hace ' + Math.floor(diff) + 's';
-    if (diff < 3600)  return 'hace ' + Math.floor(diff/60) + 'min';
-    if (diff < 86400) return 'hace ' + Math.floor(diff/3600) + 'h';
-    return 'hace ' + Math.floor(diff/86400) + 'd';
-  }
-
-  function buildTicker(articles) {
-    var doubled = articles.concat(articles);
-    var scroll  = document.createElement('div');
-    scroll.className = 'nb-scroll';
-
-    doubled.forEach(function(a) {
-      var item = document.createElement('a');
-      item.className = 'nb-item';
-      item.href      = a.url;
-      item.target    = '_blank';
-      item.rel       = 'noopener noreferrer';
-
-      var src = document.createElement('span');
-      src.className   = 'nb-source';
-      src.textContent = a.source || 'News';
-      item.appendChild(src);
-
-      if (a.publishedAt) {
-        var d1 = document.createElement('span');
-        d1.className = 'nb-dot';
-        item.appendChild(d1);
-        var ag = document.createElement('span');
-        ag.className   = 'nb-age';
-        ag.textContent = timeAgo(a.publishedAt);
-        item.appendChild(ag);
-      }
-
-      var d2 = document.createElement('span');
-      d2.className = 'nb-dot';
-      item.appendChild(d2);
-
-      var ti = document.createElement('span');
-      ti.className   = 'nb-title';
-      ti.textContent = a.title;
-      item.appendChild(ti);
-
-      item.addEventListener('mouseenter', function() { scroll.classList.add('paused'); });
-      item.addEventListener('mouseleave', function() { scroll.classList.remove('paused'); });
-      scroll.appendChild(item);
-    });
-
-    track.innerHTML = '';
-    track.appendChild(scroll);
-
-    setTimeout(function() {
-      var w   = scroll.scrollWidth / 2;
-      var dur = Math.round(w / 80);
-      scroll.style.animationDuration = dur + 's';
-    }, 100);
-  }
-
-  function showError(msg) {
-    var div = document.createElement('div');
-    div.className   = 'nb-status';
-    div.textContent = msg || 'Sin conexion a noticias';
-    track.innerHTML = '';
-    track.appendChild(div);
-  }
-
-  fetch('/api/news')
-    .then(function(r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function(data) {
-      if (!data.articles || data.articles.length === 0) {
-        showError('Sin noticias disponibles');
-        return;
-      }
-      buildTicker(data.articles);
-    })
-    .catch(function(e) {
-      showError('Sin conexion a noticias');
-    });
-})();
 </script>
 </body>
 </html>
