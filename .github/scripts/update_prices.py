@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 update_prices.py
-Actualiza el array RAW en public/index.html con nuevos precios de CO1-CO7.
+Actualiza el array RAW en public/index.html con nuevos precios de CO1-CO10.
 
 Modos:
   nuevo      → agrega una fila nueva con la fecha indicada
@@ -16,6 +16,9 @@ from datetime import date, datetime
 from pathlib import Path
 
 
+CONTRACTS = ["CO1", "CO2", "CO3", "CO4", "CO5", "CO6", "CO7", "CO8", "CO9", "CO10"]
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Actualizar precios ICE Brent en index.html")
     parser.add_argument("--fecha",  default="",   help="Fecha YYYY-MM-DD (vacío = hoy)")
@@ -26,13 +29,15 @@ def parse_args():
     parser.add_argument("--co5",    required=True, type=float)
     parser.add_argument("--co6",    required=True, type=float)
     parser.add_argument("--co7",    required=True, type=float)
+    parser.add_argument("--co8",    required=True, type=float)
+    parser.add_argument("--co9",    required=True, type=float)
+    parser.add_argument("--co10",   required=True, type=float)
     parser.add_argument("--modo",   default="nuevo", choices=["nuevo", "actualizar"])
     return parser.parse_args()
 
 
 def get_fecha(raw: str) -> str:
     if raw and raw.strip():
-        # validate format
         try:
             datetime.strptime(raw.strip(), "%Y-%m-%d")
             return raw.strip()
@@ -64,6 +69,9 @@ def build_row(fecha: str, args) -> dict:
         "CO5":  round(args.co5, 2),
         "CO6":  round(args.co6, 2),
         "CO7":  round(args.co7, 2),
+        "CO8":  round(args.co8, 2),
+        "CO9":  round(args.co9, 2),
+        "CO10": round(args.co10, 2),
     }
 
 
@@ -100,7 +108,6 @@ def main():
     new_row = build_row(fecha, args)
 
     if args.modo == "nuevo":
-        # Check for duplicate date
         if data and data[-1]["Date"] == fecha:
             print(f"AVISO: Ya existe una fila para {fecha}. Usando modo 'actualizar'.")
             data[-1] = new_row
@@ -121,14 +128,12 @@ def main():
     # Serialize compactly
     new_raw_json = json.dumps(data, separators=(",", ":"))
 
-    # Replace in content
     old_raw_str = "const RAW=" + raw_match.group(1) + ";"
     new_raw_str = "const RAW=" + new_raw_json + ";"
 
     if old_raw_str in content:
         content = content.replace(old_raw_str, new_raw_str)
     else:
-        # fallback: regex replace
         content = re.sub(
             r"const RAW=\[.*?\];",
             "const RAW=" + new_raw_json + ";",
@@ -147,14 +152,16 @@ def main():
     prev = data[-2] if len(data) >= 2 else None
     print(f"\n✓ {action}")
     print(f"  Fecha : {last['Date']}")
-    print(f"  CO1   : {last['CO1']}  CO2: {last['CO2']}  CO3: {last['CO3']}")
-    print(f"  CO4   : {last['CO4']}  CO5: {last['CO5']}  CO6: {last['CO6']}  CO7: {last['CO7']}")
+    print(f"  CO1   : {last['CO1']}  CO2 : {last['CO2']}  CO3 : {last['CO3']}")
+    print(f"  CO4   : {last['CO4']}  CO5 : {last['CO5']}  CO6 : {last['CO6']}")
+    print(f"  CO7   : {last['CO7']}  CO8 : {last['CO8']}  CO9 : {last['CO9']}  CO10: {last['CO10']}")
     if prev:
         print(f"\n  VAR% 1D vs {prev['Date']}:")
-        for c in ["CO1", "CO2", "CO3", "CO4", "CO5", "CO6", "CO7"]:
-            v = (last[c] / prev[c] - 1) * 100
-            arrow = "▲" if v > 0 else "▼"
-            print(f"    {c}: {arrow} {v:+.2f}%")
+        for c in CONTRACTS:
+            if c in prev and prev[c]:
+                v = (last[c] / prev[c] - 1) * 100
+                arrow = "▲" if v > 0 else "▼"
+                print(f"    {c:5s}: {arrow} {v:+.2f}%")
     print(f"\n  Total filas RAW: {len(data)}  ({data[0]['Date']} → {data[-1]['Date']})")
 
 
