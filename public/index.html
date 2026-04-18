@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ICE Brent — Spread Monitor</title>
+<title>Monitor de Spreads — Análisis de Futuros</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -800,9 +800,9 @@ footer{
 
 <header>
   <div>
-    <div class="logo-tag">Futures Analytics</div>
-    <div class="logo-title">ICE Brent — Spread Monitor</div>
-    <div class="logo-sub">CO1 · CO2 · CO3 · CO4 · CO5 · CO6 · CO7 · CO8 · CO9 · CO10 — Calendar Spreads</div>
+    <div class="logo-tag">Análisis de Futuros</div>
+    <div class="logo-title">Monitor de Spreads</div>
+    <div class="logo-sub">CO1 · CO2 · CO3 · CO4 · CO5 · CO6 · CO7 · CO8 · CO9 · CO10</div>
   </div>
   <div style="display:flex;align-items:center;gap:18px">
     <button id="theme-toggle" onclick="toggleTheme()" class="theme-toggle" aria-label="Cambiar tema">
@@ -1120,7 +1120,7 @@ mx2DateEl.min=FIRST_DATE;mx2DateEl.max=LAST_DATE;
     const v=pp?(px/pp-1)*100:0;
     const cls=colorCls(v),arr=v>0?'▲':v<0?'▼':'—';
     const d=document.createElement('div');d.className='kpi-card';
-    d.innerHTML=`<div class="kpi-label">${c} · ${C_LABELS[c]}</div><div class="kpi-price">$${px.toFixed(2)}</div><div class="kpi-var ${cls}">${arr} ${v>=0?'+':''}${v.toFixed(2)}% <span style="opacity:.5;font-size:11px">1D</span></div>`;
+    d.innerHTML=`<div class="kpi-label">${c}</div><div class="kpi-price">$${px.toFixed(2)}</div><div class="kpi-var ${cls}">${arr} ${v>=0?'+':''}${v.toFixed(2)}% <span style="opacity:.5;font-size:11px">1D</span></div>`;
     row.appendChild(d);
   });
 })();
@@ -1128,8 +1128,8 @@ mx2DateEl.min=FIRST_DATE;mx2DateEl.max=LAST_DATE;
 // Spread selectors
 function buildSelectors(){
   const b=document.getElementById('sel-base'),l=document.getElementById('sel-long');
-  b.innerHTML='';CONTRACTS.slice(0,6).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=`${c} — ${C_LABELS[c]}`;if(c===selBase)o.selected=true;b.appendChild(o);});
-  l.innerHTML='';const bi=CONTRACTS.indexOf(selBase);CONTRACTS.slice(bi+1).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=`${c} — ${C_LABELS[c]}`;if(c===selLong)o.selected=true;l.appendChild(o);});
+  b.innerHTML='';CONTRACTS.slice(0,CONTRACTS.length-1).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;if(c===selBase)o.selected=true;b.appendChild(o);});
+  l.innerHTML='';const bi=CONTRACTS.indexOf(selBase);CONTRACTS.slice(bi+1).forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;if(c===selLong)o.selected=true;l.appendChild(o);});
   if(CONTRACTS.indexOf(selLong)<=bi){selLong=CONTRACTS[bi+1];l.value=selLong;}
 }
 buildSelectors();
@@ -1381,10 +1381,20 @@ function renderHeatmap(pairKey) {
   var curM=ROLL_DATA.cur_month;
   var months=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   var tbody=document.getElementById('hm-tbody'), rows='';
-  // Compute year range dynamically from RAW
+  // Compute year range dynamically from RAW.
+  // Skip years with fewer than 2 months of data (e.g. 2020 which only has Dec).
   var firstYear = parseInt(RAW[0].Date.split('-')[0],10);
   var lastYear  = parseInt(RAW[RAW.length-1].Date.split('-')[0],10);
+  // Count distinct months per year across full RAW
+  var monthsByYear = {};
+  RAW.forEach(function(r){
+    var parts = r.Date.split('-');
+    var y = parts[0], m = parts[1];
+    if(!monthsByYear[y]) monthsByYear[y] = new Set();
+    monthsByYear[y].add(m);
+  });
   for(var yr=firstYear;yr<=lastYear;yr++) {
+    if(monthsByYear[yr] && monthsByYear[yr].size < 2) continue;  // skip stub years
     var row='<tr><td>'+yr+'</td>';
     for(var m=1;m<=12;m++) {
       var k=yr+'-'+(m<10?'0':'')+m;
