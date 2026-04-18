@@ -28,6 +28,15 @@ on:
       co7:
         description: 'CO7 — precio'
         required: true
+      co8:
+        description: 'CO8 — precio'
+        required: true
+      co9:
+        description: 'CO9 — precio'
+        required: true
+      co10:
+        description: 'CO10 — precio'
+        required: true
       modo:
         description: 'Modo — "nuevo" agrega fila nueva, "actualizar" modifica el último día'
         required: true
@@ -63,6 +72,9 @@ jobs:
             --co5   "${{ github.event.inputs.co5 }}" \
             --co6   "${{ github.event.inputs.co6 }}" \
             --co7   "${{ github.event.inputs.co7 }}" \
+            --co8   "${{ github.event.inputs.co8 }}" \
+            --co9   "${{ github.event.inputs.co9 }}" \
+            --co10  "${{ github.event.inputs.co10 }}" \
             --modo  "${{ github.event.inputs.modo }}"
 
       - name: Commit y push
